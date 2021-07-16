@@ -14,7 +14,7 @@ public class Stats : MonoBehaviour
     public int m_Range;     // How far this guy can attack from far.
 
     [Header("Boosts")]
-    public int m_HealthMod;
+    public int m_HealthMod; // ass
     public int m_MeleeMod;
     public int m_RangeMod;
     public int m_DefMod;
