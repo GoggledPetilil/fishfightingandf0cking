@@ -15,10 +15,14 @@ public class GridManager : MonoBehaviour
     public GameObject m_Cursor;
     [SerializeField] private Tile m_BasicPrefab;
 
-    void Start()
+    void Awake()
     {
         m_instance = this;
-        GenerateGrid();
+    }
+
+    void Start()
+    {
+        // GenerateGrid();
     }
 
     void GenerateGrid()
