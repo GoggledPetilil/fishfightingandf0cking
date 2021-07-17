@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 867274787873293859}
   - component: {fileID: 867274787873293858}
   - component: {fileID: 867274787873293856}
+  - component: {fileID: 5531477287302955693}
   m_Layer: 0
   m_Name: Hero_Soldier
   m_TagString: Untagged
@@ -72,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: bcb0c7a7bee546b81b8277d33e590781, type: 3}
+  m_Sprite: {fileID: 6164398494420517233, guid: 0ac304abd8b14b076919524c19e9a61d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -95,3 +96,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9abadbfa78f64cf87970f05d8d926b88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UnitName: Infantry
+  m_Occupying: {fileID: 0}
+  m_Faction: 0
+  m_MaxHP: 20
+  m_HP: 20
+  m_MeleeAtk: 2
+  m_RangeAtk: 2
+  m_Def: 0
+  m_Mov: 2
+  m_Range: 1
+  m_Moving: 0
+  m_MoveSpeed: 8
+  m_Velocity: {x: 0, y: 0, z: 0}
+  m_Destination: {x: 0, y: 0, z: 0}
+  m_TileRange: []
+--- !u!95 &5531477287302955693
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 867274787873293869}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 56b5a3af0473f00e2b5066bf883ffe2b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

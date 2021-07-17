@@ -21,6 +21,15 @@ public class UnitManager : MonoBehaviour
 
     public void SetSelectedHero(Hero hero)
     {
-        m_SelectedHero = hero;
+        if(hero == null)
+        {
+            m_SelectedHero.ClearTileList();
+            m_SelectedHero = hero;
+        }
+        else
+        {
+            m_SelectedHero = hero;
+            hero.FindSelectableTiles();
+        }
     }
 }

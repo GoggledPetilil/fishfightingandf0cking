@@ -13,6 +13,7 @@ public class GridManager : MonoBehaviour
 
     [Header("Tiles")]
     public GameObject m_Cursor;
+    public GameObject[] m_Tiles;
     [SerializeField] private Tile m_BasicPrefab;
 
     void Awake()
@@ -23,6 +24,7 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         // GenerateGrid();
+        m_Tiles = GameObject.FindGameObjectsWithTag("Tile");
     }
 
     void GenerateGrid()
