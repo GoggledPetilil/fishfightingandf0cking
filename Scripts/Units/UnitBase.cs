@@ -25,6 +25,7 @@ public class UnitBase : MonoBehaviour
     public int m_Range;
 
     [Header("Movement Data")]
+    public bool m_Hasmoved = false; // When true, this unit's turn is over.
     public bool m_Moving = false;
     public float m_MoveSpeed = 5f; // How fast this unit moves through tiles.
     public Vector2 m_Velocity = new Vector2(); // How fast this unit is going.
@@ -34,6 +35,7 @@ public class UnitBase : MonoBehaviour
 
     [Header("Visuals")]
     public Animator m_Anim;
+    public SpriteRenderer m_sr;
 
     public void GetTileUnder()
     {
@@ -140,6 +142,7 @@ public class UnitBase : MonoBehaviour
             m_Moving = false;
             GetTileUnder();
             UnitManager.m_instance.SetSelectedHero(null);
+            TurnOver();
         }
     }
 
@@ -170,5 +173,18 @@ public class UnitBase : MonoBehaviour
     void SetVelocity()
     {
         m_Velocity = m_Destination * m_MoveSpeed;
+    }
+
+    void TurnOver()
+    {
+        m_Hasmoved = true;
+        float c = 0.32f;
+        m_sr.color = new Color(c, c, c, 1f);
+    }
+
+    public void RefreshTurn()
+    {
+      m_Hasmoved = false;
+      m_sr.color = new Color(1f, 1f, 1f, 1f);
     }
 }

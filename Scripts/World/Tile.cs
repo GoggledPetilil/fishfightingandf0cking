@@ -62,28 +62,35 @@ public class Tile : MonoBehaviour
             else
             {
                 // Occupying unit is an enemy.
-                if(UnitManager.m_instance.m_SelectedHero != null)
+                if(UnitManager.m_instance.m_SelectedUnit != null)
                 {
                     // The player has a Hero selected.
                     // Hero will now beat the fguck out of the enemy that's occupying this tile.
                     UnitManager.m_instance.SetSelectedHero(null);
+                }
+                else
+                {
+                    // No Hero has been selected by the player.
+                    // So, display enemy's move range.
+                    UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
                 }
             }
         }
         else
         {
             // This tile is free.
-            if(UnitManager.m_instance.m_SelectedHero != null)
+            if(UnitManager.m_instance.m_SelectedUnit != null)
             {
                 // The selected Hero will now walk to this tile.
-                // If it's within range.
-                if(UnitManager.m_instance.m_SelectedHero.m_TileRange.Contains(this))
+                // If it's within range and this unit can move.
+                UnitBase unit = UnitManager.m_instance.m_SelectedUnit;
+                if(unit.m_TileRange.Contains(this) && !unit.m_Hasmoved && unit.m_Faction == UnitBase.Faction.Hero)
                 {
-                    UnitManager.m_instance.m_SelectedHero.MoveToTile(this);
+                    UnitManager.m_instance.m_SelectedUnit.MoveToTile(this);
                 }
                 else
                 {
-                    Debug.Log("Tile not in range.");
+                    UnitManager.m_instance.SetSelectedHero(null);
                 }
             }
         }

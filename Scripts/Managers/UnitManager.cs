@@ -6,7 +6,7 @@ public class UnitManager : MonoBehaviour
 {
     public static UnitManager m_instance;
 
-    public Hero m_SelectedHero;
+    public UnitBase m_SelectedUnit;
 
     void Awake()
     {
@@ -19,17 +19,17 @@ public class UnitManager : MonoBehaviour
 
     }
 
-    public void SetSelectedHero(Hero hero)
+    public void SetSelectedHero(UnitBase unit)
     {
-        if(hero == null)
+        if(unit == null)
         {
-            m_SelectedHero.ClearTileList();
-            m_SelectedHero = hero;
+            m_SelectedUnit.ClearTileList();
+            m_SelectedUnit = unit;
         }
         else
         {
-            m_SelectedHero = hero;
-            hero.FindSelectableTiles();
+            m_SelectedUnit = unit;
+            unit.FindSelectableTiles();
         }
     }
 }
