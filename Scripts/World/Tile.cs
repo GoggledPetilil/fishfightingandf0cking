@@ -18,6 +18,11 @@ public class Tile : MonoBehaviour
     public Tile m_LastTile;
     public int m_Distance = 0;
 
+    [Header("Enemy AI Data")]
+    public float f = 0f;
+    public float g = 0f;
+    public float h = 0f;
+
     [SerializeField] private SpriteRenderer m_sr;
 
     // Start is called before the first frame update
@@ -48,7 +53,7 @@ public class Tile : MonoBehaviour
 
     void OnMouseDown()
     {
-        if(GameManager.m_instance.m_GameState != GameManager.GameState.PlayerTurn) return;
+        if(TurnManager.m_instance.m_Phase != TurnManager.Phase.PlayerPhase) return;
 
         // It's the Player's Turn
         // This tile is occupied. Interact with the occupent.
@@ -101,13 +106,13 @@ public class Tile : MonoBehaviour
         m_sr.color = c;
     }
 
-    public void FindNeighbours()
+    public void FindNeighbours(Tile target)
     {
         Reset();
-        CheckTile(Vector2.up);
-        CheckTile(Vector2.down);
-        CheckTile(Vector2.right);
-        CheckTile(-Vector2.right);
+        CheckTile(Vector2.up, target);
+        CheckTile(Vector2.down, target);
+        CheckTile(Vector2.right, target);
+        CheckTile(-Vector2.right, target);
     }
 
     public void Reset()
@@ -117,9 +122,11 @@ public class Tile : MonoBehaviour
         m_Distance = 0;
         m_AdjacentList.Clear();
         ChangeColor(Color.white);
+
+        f = g = h = 0f;
     }
 
-    public void CheckTile(Vector2 direction)
+    public void CheckTile(Vector2 direction, Tile target)
     {
         Vector2 size = new Vector2(0.25f, 0.25f);
         Vector3 p = new Vector3(transform.position.x + direction.x, transform.position.y + direction.y, transform.position.z);
@@ -128,7 +135,7 @@ public class Tile : MonoBehaviour
         foreach(Collider2D item in colliders)
         {
             Tile tile = item.GetComponent<Tile>();
-            if(tile != null && tile.m_IsWalkable)
+            if(tile != null && tile.m_IsWalkable || tile == target)
             {
                 m_AdjacentList.Add(tile);
             }

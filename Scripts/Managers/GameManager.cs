@@ -4,14 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState
-    {
-        PlayerTurn,
-        EnemyTurn,
-    }
-
     public static GameManager m_instance;
-    public GameState m_GameState;
 
     void Awake()
     {
@@ -22,17 +15,5 @@ public class GameManager : MonoBehaviour
     void Start()
     {
 
-    }
-
-    public void ChangeState(GameState newState)
-    {
-        m_GameState = newState;
-        switch(newState)
-        {
-            case GameState.PlayerTurn:
-              break;
-            case GameState.EnemyTurn:
-              break;
-        }
     }
 }

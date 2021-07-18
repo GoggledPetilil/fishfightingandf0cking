@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy : UnitBase
 {
+    GameObject target;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,5 +25,31 @@ public class Enemy : UnitBase
         {
             Move();
         }
+    }
+
+    public void CalculatePath()
+    {
+        //Tile targetTile = GetTargetTile(target);
+        Tile targetTile = target.GetComponent<UnitBase>().m_Occupying;
+        FindPath(targetTile);
+    }
+
+    public void FindNearestTarget()
+    {
+        GameObject[] targets = GameObject.FindGameObjectsWithTag("Player");
+
+        GameObject nearest = null;
+        float distance = Mathf.Infinity;
+
+        foreach(GameObject obj in targets)
+        {
+            float d = Vector2.Distance(transform.position, obj.transform.position);
+            if(d < distance)
+            {
+                distance = d;
+                nearest = obj;
+            }
+        }
+        target = nearest;
     }
 }

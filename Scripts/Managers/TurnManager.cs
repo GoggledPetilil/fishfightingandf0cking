@@ -69,32 +69,30 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    public void CheckEnemyUnits()
-    {
-        int i = 0;
-        foreach(UnitBase unit in m_EnemyUnits)
-        {
-            if(unit.m_Hasmoved)
-            {
-                i++;
-            }
-        }
-        if(i >= m_EnemyUnits.Count)
-        {
-            SwitchPhase();
-        }
-    }
-
     public void SwitchPhase()
     {
         if(m_Phase == Phase.PlayerPhase)
         {
             m_Phase = Phase.EnemyPhase;
+            MoveAllEnemies();
         }
         else
         {
             m_Phase = Phase.PlayerPhase;
         }
         Debug.Log(m_Phase);
+    }
+
+    public void MoveAllEnemies()
+    {
+        foreach(Enemy enemy in m_EnemyUnits)
+        {
+            enemy.RefreshTurn();
+
+            enemy.FindNearestTarget();
+            enemy.CalculatePath();
+            enemy.FindSelectableTiles();
+        }
+        SwitchPhase();
     }
 }

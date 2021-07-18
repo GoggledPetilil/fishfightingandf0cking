@@ -31,7 +31,9 @@ public class UnitBase : MonoBehaviour
     public Vector2 m_Velocity = new Vector2(); // How fast this unit is going.
     public Vector2 m_Destination = new Vector2(); // Where this unit will go towards.
     public List<Tile> m_TileRange = new List<Tile>();
+
     Stack<Tile> path = new Stack<Tile>();
+    public Tile m_AITargetTile; // The target tile the AI will actually move to.
 
     [Header("Visuals")]
     public Animator m_Anim;
@@ -59,18 +61,18 @@ public class UnitBase : MonoBehaviour
         return tile;
     }
 
-    public void ComputeAdjacencyList()
+    public void ComputeAdjacencyList(Tile target)
     {
         foreach(GameObject tile in GridManager.m_instance.m_Tiles)
         {
             Tile t = tile.GetComponent<Tile>();
-            t.FindNeighbours();
+            t.FindNeighbours(target);
         }
     }
 
     public void FindSelectableTiles()
     {
-        ComputeAdjacencyList();
+        ComputeAdjacencyList(null);
 
         Queue<Tile> process = new Queue<Tile>();
 
@@ -125,7 +127,6 @@ public class UnitBase : MonoBehaviour
                 CalculateHeading(target);
                 SetVelocity();
 
-                // Possible rotation here
                 Vector3 v = new Vector3(m_Velocity.x, m_Velocity.y, 0f);
                 transform.position += v * Time.deltaTime;
                 MoveAnimation();
@@ -175,7 +176,103 @@ public class UnitBase : MonoBehaviour
         m_Velocity = m_Destination * m_MoveSpeed;
     }
 
-    void EndTurn()
+    protected Tile FindLowestF(List<Tile> list)
+    {
+        Tile lowest = list[0];
+
+        foreach(Tile t in list)
+        {
+            if(t.f < lowest.f)
+            {
+                lowest = t;
+            }
+        }
+
+        list.Remove(lowest);
+
+        return lowest;
+    }
+
+    protected Tile FindEndTile(Tile t)
+    {
+        Stack<Tile> tempPath = new Stack<Tile>();
+        Tile next = t.m_LastTile;
+        while(next != null)
+        {
+            tempPath.Push(next);
+            next = next.m_LastTile;
+        }
+
+        if(tempPath.Count <= m_Mov)
+        {
+            return t.m_LastTile;
+        }
+
+        Tile endTile = null;
+        for (int i = 0; i <= m_Mov; i++)
+        {
+            endTile = tempPath.Pop();
+        }
+        Debug.Log(endTile);
+        return endTile;
+    }
+
+    protected void FindPath(Tile target)
+    {
+        ComputeAdjacencyList(target);
+        GetTileUnder();
+
+        List<Tile> openList = new List<Tile>();
+        List<Tile> closedList = new List<Tile>();
+
+        openList.Add(m_Occupying);
+        m_Occupying.h = Vector2.Distance(m_Occupying.transform.position, target.transform.position);
+        m_Occupying.f = m_Occupying.h;
+
+        while(openList.Count > 0)
+        {
+            Tile t = FindLowestF(openList);
+
+            closedList.Add(t);
+
+            if(t == target)
+            {
+                m_AITargetTile = FindEndTile(t);
+                MoveToTile(m_AITargetTile);
+                return;
+            }
+
+            foreach(Tile tile in t.m_AdjacentList)
+            {
+                if(closedList.Contains(tile))
+                {
+                    // Do Nothing.
+                }
+                else if(openList.Contains(tile))
+                {
+                    float tempG = t.g + Vector2.Distance(tile.transform.position, t.transform.position);
+                    if(tempG < tile.g)
+                    {
+                        tile.m_LastTile = t;
+
+                        tile.g = tempG;
+                        tile.f = tile.g + tile.h;
+                    }
+                }
+                else
+                {
+                    tile.m_LastTile = t;
+                    tile.g = t.g + Vector2.Distance(tile.transform.position, t.transform.position);
+                    tile.h = Vector2.Distance(tile.transform.position, target.transform.position);
+                    tile.f = tile.g + tile.h;
+
+                    openList.Add(tile);
+                }
+            }
+        }
+    }
+
+    public void EndTurn()
     {
         m_Hasmoved = true;
         float c = 0.32f;
@@ -184,10 +281,6 @@ public class UnitBase : MonoBehaviour
         if(m_Faction == Faction.Hero)
         {
             TurnManager.m_instance.CheckPlayerUnits();
-        }
-        else
-        {
-            TurnManager.m_instance.CheckEnemyUnits();
         }
     }
 

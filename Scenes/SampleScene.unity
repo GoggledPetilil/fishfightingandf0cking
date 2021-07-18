@@ -5930,7 +5930,7 @@ GameObject:
   - component: {fileID: 7999108838783235712}
   m_Layer: 0
   m_Name: Enemy_DUMMY
-  m_TagString: Player
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5959,9 +5959,10 @@ MonoBehaviour:
   m_Range: 1
   m_Hasmoved: 0
   m_Moving: 0
-  m_MoveSpeed: 5
+  m_MoveSpeed: 6
   m_Velocity: {x: 0, y: 0}
   m_Destination: {x: 0, y: 0}
   m_TileRange: []
+  m_AITargetTile: {fileID: 0}
   m_Anim: {fileID: 3443115721731486463}
-  m_sr: {fileID: 0}
+  m_sr: {fileID: 7999108838783235696}
