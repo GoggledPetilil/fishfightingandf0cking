@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    public static TurnManager m_instance;
-
     public enum Phase
     {
         PlayerPhase,
         EnemyPhase
     }
 
+    public static TurnManager m_instance;
+
     public Phase m_Phase;
-    public List<Hero> m_PlayerUnits = new List<Hero>();
-    public List<Enemy> m_EnemyUnits = new List<Enemy>();
+    public List<UnitBase> m_PlayerUnits = new List<UnitBase>();
+    public List<UnitBase> m_EnemyUnits = new List<UnitBase>();
 
     void Awake()
     {
@@ -24,24 +24,77 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetAllUnits();
-        SwitchPhase();
+        m_Phase = Phase.PlayerPhase;
+    }
+
+    public void AddUnit(UnitBase unit)
+    {
+        if(unit.m_Faction == UnitBase.Faction.Hero)
+        {
+            m_PlayerUnits.Add(unit);
+        }
+        else
+        {
+            m_EnemyUnits.Add(unit);
+        }
+    }
+
+    public void DeleteUnit(UnitBase unit)
+    {
+        if(unit.m_Faction == UnitBase.Faction.Hero)
+        {
+            int i = m_PlayerUnits.IndexOf(unit);
+            m_PlayerUnits.RemoveAt(i);
+        }
+        else
+        {
+          int i = m_EnemyUnits.IndexOf(unit);
+          m_EnemyUnits.RemoveAt(i);
+        }
+    }
+
+    public void CheckPlayerUnits()
+    {
+        int i = 0;
+        foreach(UnitBase unit in m_PlayerUnits)
+        {
+            if(unit.m_Hasmoved)
+            {
+                i++;
+            }
+        }
+        if(i >= m_PlayerUnits.Count)
+        {
+            SwitchPhase();
+        }
+    }
+
+    public void CheckEnemyUnits()
+    {
+        int i = 0;
+        foreach(UnitBase unit in m_EnemyUnits)
+        {
+            if(unit.m_Hasmoved)
+            {
+                i++;
+            }
+        }
+        if(i >= m_EnemyUnits.Count)
+        {
+            SwitchPhase();
+        }
     }
 
     public void SwitchPhase()
     {
-        /*if(m_Phase == TurnManager.PlayerPhase)
+        if(m_Phase == Phase.PlayerPhase)
         {
-            m_Phase = TurnManager.EnemyPhase;
+            m_Phase = Phase.EnemyPhase;
         }
         else
         {
-            m_Phase = TurnManager.PlayerPhase;
-        }*/
-    }
-
-    public void GetAllUnits()
-    {
-        //m_PlayerUnits.AddRange(new List<Hero>(GameObject.FindGameObjectsWithTag("Player").GetComponent<Hero>()));
+            m_Phase = Phase.PlayerPhase;
+        }
+        Debug.Log(m_Phase);
     }
 }

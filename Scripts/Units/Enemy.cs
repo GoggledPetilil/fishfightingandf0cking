@@ -8,6 +8,7 @@ public class Enemy : UnitBase
     void Start()
     {
         GetTileUnder();
+        TurnManager.m_instance.AddUnit((Enemy)this);
     }
 
     // Update is called once per frame

@@ -142,7 +142,7 @@ public class UnitBase : MonoBehaviour
             m_Moving = false;
             GetTileUnder();
             UnitManager.m_instance.SetSelectedHero(null);
-            TurnOver();
+            EndTurn();
         }
     }
 
@@ -175,11 +175,20 @@ public class UnitBase : MonoBehaviour
         m_Velocity = m_Destination * m_MoveSpeed;
     }
 
-    void TurnOver()
+    void EndTurn()
     {
         m_Hasmoved = true;
         float c = 0.32f;
         m_sr.color = new Color(c, c, c, 1f);
+
+        if(m_Faction == Faction.Hero)
+        {
+            TurnManager.m_instance.CheckPlayerUnits();
+        }
+        else
+        {
+            TurnManager.m_instance.CheckEnemyUnits();
+        }
     }
 
     public void RefreshTurn()
