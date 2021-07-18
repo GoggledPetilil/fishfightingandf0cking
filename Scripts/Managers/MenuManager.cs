@@ -8,10 +8,16 @@ public class MenuManager : MonoBehaviour
     public static MenuManager m_instance;
 
     [SerializeField] private GameObject m_UnitInfoBox;
+    [SerializeField] private GameObject m_UnitCommandMenu;
 
     void Awake()
     {
         m_instance = this;
+    }
+
+    void Start()
+    {
+        m_UnitCommandMenu.SetActive(false);
     }
 
     public void ShowHighlightedUnit(UnitBase unit)
@@ -23,5 +29,10 @@ public class MenuManager : MonoBehaviour
         }
         m_UnitInfoBox.GetComponentInChildren<TMP_Text>().text = unit.m_UnitName;
         m_UnitInfoBox.SetActive(true);
+    }
+
+    public void ToggleUnitCommandMenu(bool state)
+    {
+        m_UnitCommandMenu.SetActive(state);
     }
 }

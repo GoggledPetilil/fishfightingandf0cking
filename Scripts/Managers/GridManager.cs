@@ -6,13 +6,11 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager m_instance;
 
-    [Header("Map Info")]
-    [SerializeField] private int m_Width;
-    [SerializeField] private int m_Height;
-    [SerializeField] private Transform m_Cam;
+    [Header("Tile Logic")]
+    public GameObject m_Cursor;
+    public bool m_CanClick;
 
     [Header("Tiles")]
-    public GameObject m_Cursor;
     public GameObject[] m_Tiles;
     [SerializeField] private Tile m_BasicPrefab;
 
@@ -23,21 +21,21 @@ public class GridManager : MonoBehaviour
 
     void Start()
     {
-        // GenerateGrid();
         m_Tiles = GameObject.FindGameObjectsWithTag("Tile");
     }
 
-    void GenerateGrid()
+    public void SetCursorPosition(Vector2 pos)
     {
-        for (int x = 0; x < m_Width; x++)
-        {
-            for (int y = 0; y < m_Height; y++)
-            {
-                var spawnedTile = Instantiate(m_BasicPrefab, new Vector3(x, y), Quaternion.identity);
-                spawnedTile.name = $"Tile {x} {y}";
-            }
-        }
-        float offset = 0.5f;
-        m_Cam.position = new Vector3((float)m_Width / 2 - offset, (float)m_Height / 2 - offset, -10f);
+        m_Cursor.transform.position = pos;
+    }
+
+    public void ToggleCursor(bool state)
+    {
+        m_Cursor.SetActive(state);
+    }
+
+    public void TileClickAllowed(bool state)
+    {
+        m_CanClick = state;
     }
 }

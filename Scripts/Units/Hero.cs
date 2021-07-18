@@ -8,7 +8,7 @@ public class Hero : UnitBase
     void Start()
     {
         GetTileUnder();
-        TurnManager.m_instance.AddUnit((Hero)this);
+        TurnManager.m_instance.AddHeroUnit((Hero)this);
     }
 
     // Update is called once per frame

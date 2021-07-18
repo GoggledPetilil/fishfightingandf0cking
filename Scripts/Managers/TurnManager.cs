@@ -14,7 +14,7 @@ public class TurnManager : MonoBehaviour
 
     public Phase m_Phase;
     public List<UnitBase> m_PlayerUnits = new List<UnitBase>();
-    public List<UnitBase> m_EnemyUnits = new List<UnitBase>();
+    public List<Enemy> m_EnemyUnits = new List<Enemy>();
 
     void Awake()
     {
@@ -27,30 +27,26 @@ public class TurnManager : MonoBehaviour
         m_Phase = Phase.PlayerPhase;
     }
 
-    public void AddUnit(UnitBase unit)
+    public void AddHeroUnit(Hero unit)
     {
-        if(unit.m_Faction == UnitBase.Faction.Hero)
-        {
-            m_PlayerUnits.Add(unit);
-        }
-        else
-        {
-            m_EnemyUnits.Add(unit);
-        }
+        m_PlayerUnits.Add(unit);
     }
 
-    public void DeleteUnit(UnitBase unit)
+    public void AddEnemyUnit(Enemy unit)
     {
-        if(unit.m_Faction == UnitBase.Faction.Hero)
-        {
-            int i = m_PlayerUnits.IndexOf(unit);
-            m_PlayerUnits.RemoveAt(i);
-        }
-        else
-        {
-          int i = m_EnemyUnits.IndexOf(unit);
-          m_EnemyUnits.RemoveAt(i);
-        }
+        m_EnemyUnits.Add(unit);
+    }
+
+    public void DeleteHero(Hero unit)
+    {
+        int i = m_PlayerUnits.IndexOf(unit);
+        m_PlayerUnits.RemoveAt(i);
+    }
+
+    public void DeleteEnemy(Enemy unit)
+    {
+        int i = m_EnemyUnits.IndexOf(unit);
+        m_EnemyUnits.RemoveAt(i);
     }
 
     public void CheckPlayerUnits()
@@ -61,11 +57,11 @@ public class TurnManager : MonoBehaviour
             if(unit.m_Hasmoved)
             {
                 i++;
+                if(i >= m_PlayerUnits.Count)
+                {
+                    SwitchPhase();
+                }
             }
-        }
-        if(i >= m_PlayerUnits.Count)
-        {
-            SwitchPhase();
         }
     }
 
@@ -73,26 +69,48 @@ public class TurnManager : MonoBehaviour
     {
         if(m_Phase == Phase.PlayerPhase)
         {
+            // It is now Enemy Phase
             m_Phase = Phase.EnemyPhase;
-            MoveAllEnemies();
+            GridManager.m_instance.ToggleCursor(false);
+            GridManager.m_instance.TileClickAllowed(false);
+            MoveNextEnemy(0);
+
         }
         else
         {
+            // It is now Player Phase
             m_Phase = Phase.PlayerPhase;
+            GridManager.m_instance.ToggleCursor(true);
+            GridManager.m_instance.TileClickAllowed(true);
         }
-        Debug.Log(m_Phase);
-    }
 
-    public void MoveAllEnemies()
-    {
+        foreach(Hero hero in m_PlayerUnits)
+        {
+            hero.RefreshTurn();
+        }
+
         foreach(Enemy enemy in m_EnemyUnits)
         {
+            enemy.RefreshTurn();
+        }
+    }
+
+    public void MoveNextEnemy(int index)
+    {
+        if(index < m_EnemyUnits.Count)
+        {
+            Enemy enemy = m_EnemyUnits[index];
+
             enemy.RefreshTurn();
 
             enemy.FindNearestTarget();
             enemy.CalculatePath();
             enemy.FindSelectableTiles();
         }
-        SwitchPhase();
+        else
+        {
+            // The last enemy has already moved, so switch phase.
+            SwitchPhase();
+        }
     }
 }

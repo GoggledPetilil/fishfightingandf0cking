@@ -21,9 +21,9 @@ public class UnitManager : MonoBehaviour
 
     public void SetSelectedHero(UnitBase unit)
     {
+        ClearSelectedTileRange();
         if(unit == null)
         {
-            m_SelectedUnit.ClearTileList();
             m_SelectedUnit = unit;
         }
         else
@@ -31,5 +31,36 @@ public class UnitManager : MonoBehaviour
             m_SelectedUnit = unit;
             unit.FindSelectableTiles();
         }
+    }
+
+    public void ClearSelectedTileRange()
+    {
+        if(m_SelectedUnit != null && m_SelectedUnit.m_TileRange.Count > 0)
+        {
+            m_SelectedUnit.ClearTileList();
+        }
+    }
+
+    public void SelectedUnitAttacks()
+    {
+        SelectedUnitWaits();
+    }
+
+    public void SelectedUnitShoots()
+    {
+        SelectedUnitWaits();
+    }
+
+    public void SelectedUnitWaits()
+    {
+        MenuManager.m_instance.ToggleUnitCommandMenu(false);
+        GridManager.m_instance.TileClickAllowed(true);
+        GridManager.m_instance.ToggleCursor(true);
+
+        if(m_SelectedUnit != null)
+        {
+            m_SelectedUnit.EndTurn();
+        }
+        SetSelectedHero(null);
     }
 }

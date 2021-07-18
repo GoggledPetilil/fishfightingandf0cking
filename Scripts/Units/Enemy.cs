@@ -10,7 +10,7 @@ public class Enemy : UnitBase
     void Start()
     {
         GetTileUnder();
-        TurnManager.m_instance.AddUnit((Enemy)this);
+        TurnManager.m_instance.AddEnemyUnit((Enemy)this);
     }
 
     // Update is called once per frame
@@ -24,12 +24,12 @@ public class Enemy : UnitBase
         if(m_Moving)
         {
             Move();
+            CameraManager.m_instance.SetCameraTarget(transform.position);
         }
     }
 
     public void CalculatePath()
     {
-        //Tile targetTile = GetTargetTile(target);
         Tile targetTile = target.GetComponent<UnitBase>().m_Occupying;
         FindPath(targetTile);
     }
@@ -51,5 +51,25 @@ public class Enemy : UnitBase
             }
         }
         target = nearest;
+    }
+
+    public void FindWeakestTarget()
+    {
+        GameObject[] targets = GameObject.FindGameObjectsWithTag("Player");
+
+        GameObject weakest = null;
+        int power = 99;
+
+        foreach(GameObject obj in targets)
+        {
+            float d = Vector2.Distance(transform.position, obj.transform.position);
+            int p = obj.GetComponent<UnitBase>().m_HP + obj.GetComponent<UnitBase>().m_Def;
+            if(p < power)
+            {
+                power = p;
+                weakest = obj;
+            }
+        }
+        target = weakest;
     }
 }

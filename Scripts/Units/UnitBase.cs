@@ -14,6 +14,7 @@ public class UnitBase : MonoBehaviour
     public string m_UnitName;
     public Tile m_Occupying;
     public Faction m_Faction;
+    public GameObject m_Battler;
 
     [Header("Parameters")]
     public int m_MaxHP;
@@ -47,18 +48,6 @@ public class UnitBase : MonoBehaviour
             Tile tile = hit.collider.gameObject.GetComponent<Tile>();
             tile.SetUnit(this);
         }
-    }
-
-    public Tile GetTargetTile(GameObject target)
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 1);
-        Tile tile = null;
-
-        if(hit != null)
-        {
-            tile = hit.collider.GetComponent<Tile>();
-        }
-        return tile;
     }
 
     public void ComputeAdjacencyList(Tile target)
@@ -139,11 +128,27 @@ public class UnitBase : MonoBehaviour
         }
         else
         {
-            ClearTileList();
-            m_Moving = false;
-            GetTileUnder();
+            FinishedMoving();
+        }
+    }
+
+    public void FinishedMoving()
+    {
+        m_Moving = false;
+        GetTileUnder();
+
+        if(m_Faction == Faction.Enemy)
+        {
+            // The enemy will Wait after their turn is over.
             UnitManager.m_instance.SetSelectedHero(null);
             EndTurn();
+        }
+        else
+        {
+            // This unit is a player, so give options.
+            ClearTileList();
+
+            MenuManager.m_instance.ToggleUnitCommandMenu(true);
         }
     }
 
@@ -213,7 +218,6 @@ public class UnitBase : MonoBehaviour
         {
             endTile = tempPath.Pop();
         }
-        Debug.Log(endTile);
         return endTile;
     }
 
@@ -275,6 +279,7 @@ public class UnitBase : MonoBehaviour
     public void EndTurn()
     {
         m_Hasmoved = true;
+        ClearTileList();
         float c = 0.32f;
         m_sr.color = new Color(c, c, c, 1f);
 
@@ -282,11 +287,17 @@ public class UnitBase : MonoBehaviour
         {
             TurnManager.m_instance.CheckPlayerUnits();
         }
+        else
+        {
+            // This is an enemy unit.
+            int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
+            TurnManager.m_instance.MoveNextEnemy(i + 1);
+        }
     }
 
     public void RefreshTurn()
     {
-      m_Hasmoved = false;
-      m_sr.color = new Color(1f, 1f, 1f, 1f);
+        m_Hasmoved = false;
+        m_sr.color = new Color(1f, 1f, 1f, 1f);
     }
 }

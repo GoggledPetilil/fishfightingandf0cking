@@ -42,6 +42,7 @@ public class Tile : MonoBehaviour
     void OnMouseEnter()
     {
         m_Cursor.position = new Vector3(transform.position.x, transform.position.y, m_Cursor.position.z);
+        CameraManager.m_instance.SetCameraTarget(new Vector2(transform.position.x, transform.position.y));
         MenuManager.m_instance.ShowHighlightedUnit(m_OccupiedUnit);
     }
 
@@ -53,32 +54,32 @@ public class Tile : MonoBehaviour
 
     void OnMouseDown()
     {
-        if(TurnManager.m_instance.m_Phase != TurnManager.Phase.PlayerPhase) return;
+        // You can't click on tiles if you don't have permission to lol
+        if(GridManager.m_instance.m_CanClick == false) return;
 
-        // It's the Player's Turn
-        // This tile is occupied. Interact with the occupent.
         if(m_OccupiedUnit != null)
         {
-            // Occupying unit is a Hero, so select the Hero.
+            // This tile is occupied. Interact with the occupent:
             if(m_OccupiedUnit.m_Faction == UnitBase.Faction.Hero)
             {
-                UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
-            }
-            else
-            {
-                // Occupying unit is an enemy.
-                if(UnitManager.m_instance.m_SelectedUnit != null)
+                // Occupying unit is a Hero.
+                if(m_OccupiedUnit != UnitManager.m_instance.m_SelectedUnit)
                 {
-                    // The player has a Hero selected.
-                    // Hero will now beat the fguck out of the enemy that's occupying this tile.
-                    UnitManager.m_instance.SetSelectedHero(null);
+                    // This is a different hero, so select this unit instead.
+                    UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
                 }
                 else
                 {
-                    // No Hero has been selected by the player.
-                    // So, display enemy's move range.
-                    UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
+                    // The occupying unit is the same as the unit already selected.
+                    m_OccupiedUnit.FinishedMoving();
+                    GridManager.m_instance.TileClickAllowed(false);
+                    GridManager.m_instance.ToggleCursor(false);
                 }
+            }
+            else
+            {
+                // Occupying unit is an enemy, so display enemy's move range.
+                UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
             }
         }
         else
@@ -86,15 +87,18 @@ public class Tile : MonoBehaviour
             // This tile is free.
             if(UnitManager.m_instance.m_SelectedUnit != null)
             {
-                // The selected Hero will now walk to this tile.
-                // If it's within range and this unit can move.
+                // The Player has a unit selected
                 UnitBase unit = UnitManager.m_instance.m_SelectedUnit;
-                if(unit.m_TileRange.Contains(this) && !unit.m_Hasmoved && unit.m_Faction == UnitBase.Faction.Hero)
+                if(unit.m_TileRange.Contains(this) && !unit.m_Hasmoved && !unit.m_Moving && unit.m_Faction == UnitBase.Faction.Hero)
                 {
+                    // The selected Player unit will now move to this tile.
                     UnitManager.m_instance.m_SelectedUnit.MoveToTile(this);
+                    GridManager.m_instance.TileClickAllowed(false);
+                    GridManager.m_instance.ToggleCursor(false);
                 }
                 else
                 {
+                    // Player clicked a tile out of range or had an enemy selected, so deselect the unit.
                     UnitManager.m_instance.SetSelectedHero(null);
                 }
             }
