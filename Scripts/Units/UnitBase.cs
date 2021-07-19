@@ -14,6 +14,7 @@ public class UnitBase : MonoBehaviour
     public string m_UnitName;
     public Tile m_Occupying;
     public Faction m_Faction;
+    public HealthBar m_HealthBar;
 
     [Header("Parameters")]
     public int m_MaxHP;
@@ -23,6 +24,11 @@ public class UnitBase : MonoBehaviour
     public int m_Def;
     public int m_Mov;
     public int m_ShootRange;
+
+    [Header("Buffs")]
+    public int m_MeleeBuff;
+    public int m_RangeBuff;
+    public int m_DefBuff;
 
     [Header("Movement Data")]
     public bool m_Hasmoved = false; // When true, this unit's turn is over.
@@ -45,6 +51,30 @@ public class UnitBase : MonoBehaviour
     [Header("Visuals")]
     public Animator m_Anim;
     public SpriteRenderer m_sr;
+
+    public void DamageUnit(int damage)
+    {
+        Mathf.Clamp(damage, 0, Mathf.Infinity); // Prevent damage from being negative (thus healing this unit).
+        m_HP = Mathf.Clamp(m_HP - damage, 0, m_MaxHP); // HP won't go above max or below 0.
+        m_HealthBar.SetHealthBar(m_MaxHP, m_HP);
+
+        EffectsManager.m_instance.SpawnPopUp(transform.position, damage.ToString());
+    }
+
+    public int GetMeleeAtk()
+    {
+        return m_MeleeAtk + m_MeleeBuff;
+    }
+
+    public int GetRangeAtk()
+    {
+        return m_RangeAtk + m_RangeBuff;
+    }
+
+    public int GetDefence()
+    {
+        return m_Def + m_DefBuff;
+    }
 
     public void GetTileUnder()
     {
@@ -259,6 +289,24 @@ public class UnitBase : MonoBehaviour
         m_Hasmoved = false;
         m_IsAttacking = false;
         m_sr.color = new Color(1f, 1f, 1f, 1f);
+    }
+
+    public void Die()
+    {
+        EffectsManager.m_instance.SpawnExplosion(this.transform.position);
+        this.gameObject.transform.position = new Vector2(99, 99); // Get this dude off-screen.
+
+        // Make the rest of the logic happen.
+        if(m_Faction == Faction.Hero)
+        {
+            TurnManager.m_instance.DeleteHero((Hero)this);
+            TurnManager.m_instance.CheckPlayerUnits();
+        }
+        else
+        {
+            TurnManager.m_instance.DeleteEnemy((Enemy)this);
+        }
+        Destroy(this.gameObject);
     }
 
     public void MoveAnimation()
