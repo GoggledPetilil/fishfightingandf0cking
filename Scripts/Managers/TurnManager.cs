@@ -16,6 +16,8 @@ public class TurnManager : MonoBehaviour
     public List<UnitBase> m_PlayerUnits = new List<UnitBase>();
     public List<Enemy> m_EnemyUnits = new List<Enemy>();
 
+    public Enemy m_CurrentlyMoving;
+
     void Awake()
     {
         m_instance = this;
@@ -99,14 +101,19 @@ public class TurnManager : MonoBehaviour
     {
         if(index < m_EnemyUnits.Count)
         {
+
             Enemy enemy = m_EnemyUnits[index];
 
             enemy.RefreshTurn();
 
             enemy.FindNearestTarget();
             enemy.CalculatePath();
+
             enemy.FindSelectableTiles(enemy.m_Mov);
-            enemy.ShowSelectableTiles(Color.blue);
+            enemy.ShowSelectableTiles(GridManager.m_instance.m_MoveTileColor);
+
+            m_CurrentlyMoving = enemy;
+            Debug.Log("Moving the next enemy!" + enemy);
         }
         else
         {

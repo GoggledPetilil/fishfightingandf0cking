@@ -30,7 +30,7 @@ public class UnitManager : MonoBehaviour
         {
             m_SelectedUnit = unit;
             unit.FindSelectableTiles(unit.m_Mov);
-            unit.ShowSelectableTiles(Color.blue);
+            unit.ShowSelectableTiles(GridManager.m_instance.m_MoveTileColor);
         }
     }
 
@@ -46,7 +46,7 @@ public class UnitManager : MonoBehaviour
     {
         m_SelectedUnit.m_IsAttacking = true;
         m_SelectedUnit.GetAttackRange(1);
-        m_SelectedUnit.ShowSelectableTiles(Color.red);
+        m_SelectedUnit.ShowSelectableTiles(GridManager.m_instance.m_AttackTileColor);
 
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
@@ -59,7 +59,7 @@ public class UnitManager : MonoBehaviour
     {
         m_SelectedUnit.m_IsAttacking = true;
         m_SelectedUnit.GetAttackRange(m_SelectedUnit.m_ShootRange);
-        m_SelectedUnit.ShowSelectableTiles(Color.red);
+        m_SelectedUnit.ShowSelectableTiles(GridManager.m_instance.m_AttackTileColor);
 
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);

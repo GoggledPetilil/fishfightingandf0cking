@@ -9,6 +9,8 @@ public class GridManager : MonoBehaviour
     [Header("Tile Logic")]
     public GameObject m_Cursor;
     public bool m_CanClick;
+    public Color m_MoveTileColor;
+    public Color m_AttackTileColor;
 
     [Header("Tiles")]
     public GameObject[] m_Tiles;

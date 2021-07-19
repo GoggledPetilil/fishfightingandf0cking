@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private Transform m_Cursor;
-
     [Header("Tile Data")]
+    public string m_TileName;
     [SerializeField] private bool m_Walkable;
     public UnitBase m_OccupiedUnit;
     public bool m_IsWalkable => m_Walkable && m_OccupiedUnit == null;
     public int m_TravelCost;
+    public int m_DefBoost;
 
     [Header("Range Data")]
     public List<Tile> m_AdjacentList = new List<Tile>();
@@ -25,10 +25,14 @@ public class Tile : MonoBehaviour
 
     [SerializeField] private SpriteRenderer m_sr;
 
-    // Start is called before the first frame update
     void Start()
     {
-        m_Cursor = GridManager.m_instance.m_Cursor.transform;
+        Init();
+    }
+
+    protected void Init()
+    {
+        m_sr.enabled = false;
     }
 
     public void SetUnit(UnitBase unit)
@@ -41,14 +45,14 @@ public class Tile : MonoBehaviour
 
     void OnMouseEnter()
     {
-        m_Cursor.position = new Vector3(transform.position.x, transform.position.y, m_Cursor.position.z);
+        GridManager.m_instance.SetCursorPosition(transform.position);
         CameraManager.m_instance.SetCameraTarget(new Vector2(transform.position.x, transform.position.y));
         MenuManager.m_instance.ShowHighlightedUnit(m_OccupiedUnit);
     }
 
     void OnMouseExit()
     {
-        m_Cursor.position = new Vector3(99, 99, m_Cursor.position.z);
+        GridManager.m_instance.SetCursorPosition(new Vector2(99, 99));
         MenuManager.m_instance.ShowHighlightedUnit(null);
     }
 
@@ -117,6 +121,7 @@ public class Tile : MonoBehaviour
 
     public void ChangeColor(Color c)
     {
+        m_sr.enabled = true;
         m_sr.color = c;
     }
 
@@ -135,7 +140,7 @@ public class Tile : MonoBehaviour
         m_LastTile = null;
         m_Distance = 0;
         m_AdjacentList.Clear();
-        ChangeColor(Color.white);
+        m_sr.enabled = false;
 
         f = g = h = 0f;
     }
