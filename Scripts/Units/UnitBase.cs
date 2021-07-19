@@ -293,6 +293,7 @@ public class UnitBase : MonoBehaviour
 
     public void Die()
     {
+        ClearTileList();
         EffectsManager.m_instance.SpawnExplosion(this.transform.position);
         this.gameObject.transform.position = new Vector2(99, 99); // Get this dude off-screen.
 

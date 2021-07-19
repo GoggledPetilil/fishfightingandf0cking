@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c22a905db87b52f290d0ef3c3e8fb82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UnitName: Soldier
+  m_UnitName: SOLDIER
   m_Occupying: {fileID: 0}
   m_Faction: 1
   m_HealthBar: {fileID: 8273823252027058655}

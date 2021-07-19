@@ -73,8 +73,12 @@ public class TurnManager : MonoBehaviour
         {
             // It is now Enemy Phase
             m_Phase = Phase.EnemyPhase;
+
             GridManager.m_instance.ToggleCursor(false);
             GridManager.m_instance.TileClickAllowed(false);
+            GridManager.m_instance.ShowHighlightedTile(null);
+            MenuManager.m_instance.ToggleEndButton(false);
+
             MoveNextEnemy(0);
 
         }
@@ -82,8 +86,10 @@ public class TurnManager : MonoBehaviour
         {
             // It is now Player Phase
             m_Phase = Phase.PlayerPhase;
+
             GridManager.m_instance.ToggleCursor(true);
             GridManager.m_instance.TileClickAllowed(true);
+            MenuManager.m_instance.ToggleEndButton(true);
         }
 
         foreach(Hero hero in m_PlayerUnits)
@@ -108,12 +114,11 @@ public class TurnManager : MonoBehaviour
 
             enemy.FindNearestTarget();
             enemy.CalculatePath();
-
             enemy.FindSelectableTiles(enemy.m_Mov);
-            enemy.ShowSelectableTiles(GridManager.m_instance.m_MoveTileColor);
+
+            //enemy.ShowSelectableTiles(GridManager.m_instance.m_MoveTileColor);
 
             m_CurrentlyMoving = enemy;
-            Debug.Log("Moving the next enemy!" + enemy);
         }
         else
         {

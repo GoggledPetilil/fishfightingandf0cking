@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
     public static MenuManager m_instance;
 
-    [SerializeField] private GameObject m_UnitInfoBox;
     [SerializeField] private GameObject m_UnitCommandMenu;
     [SerializeField] private GameObject m_MeleeButton;
     [SerializeField] private GameObject m_ShootButton;
+
+    [SerializeField] private GameObject m_EndButton;
 
     void Awake()
     {
@@ -20,17 +20,6 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         m_UnitCommandMenu.SetActive(false);
-    }
-
-    public void ShowHighlightedUnit(UnitBase unit)
-    {
-        if(unit == null)
-        {
-            m_UnitInfoBox.SetActive(false);
-            return;
-        }
-        m_UnitInfoBox.GetComponentInChildren<TMP_Text>().text = unit.m_UnitName;
-        m_UnitInfoBox.SetActive(true);
     }
 
     public void ToggleUnitCommandMenu(bool state)
@@ -46,5 +35,10 @@ public class MenuManager : MonoBehaviour
     public void ToggleShootButton(bool state)
     {
         m_ShootButton.SetActive(state);
+    }
+
+    public void ToggleEndButton(bool state)
+    {
+        m_EndButton.SetActive(state);
     }
 }

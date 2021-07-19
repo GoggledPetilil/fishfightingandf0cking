@@ -73,6 +73,7 @@ public class UnitManager : MonoBehaviour
         MenuManager.m_instance.ToggleUnitCommandMenu(false);
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
+        CameraManager.m_instance.LockCamera(false);
 
         if(m_SelectedUnit != null)
         {

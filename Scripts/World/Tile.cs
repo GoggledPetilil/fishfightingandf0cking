@@ -6,7 +6,7 @@ public class Tile : MonoBehaviour
 {
     [Header("Tile Data")]
     public string m_TileName;
-    [SerializeField] private bool m_Walkable;
+    public bool m_Walkable; // If unoccupied, can units walk on this tile?
     public UnitBase m_OccupiedUnit;
     public bool m_IsWalkable => m_Walkable && m_OccupiedUnit == null;
     public int m_TravelCost;
@@ -45,15 +45,23 @@ public class Tile : MonoBehaviour
 
     void OnMouseEnter()
     {
+        UnitBase u = UnitManager.m_instance.m_SelectedUnit;
+        if(GridManager.m_instance.m_CanClick == false ||
+        (u != null && u.m_IsAttacking && !u.m_TileRange.Contains(this))) return;
+
         GridManager.m_instance.SetCursorPosition(transform.position);
         CameraManager.m_instance.SetCameraTarget(new Vector2(transform.position.x, transform.position.y));
-        MenuManager.m_instance.ShowHighlightedUnit(m_OccupiedUnit);
+        GridManager.m_instance.ShowHighlightedUnit(m_OccupiedUnit);
+        GridManager.m_instance.ShowHighlightedTile(this);
     }
 
     void OnMouseExit()
     {
+        if(GridManager.m_instance.m_CanClick == false) return;
+
         GridManager.m_instance.SetCursorPosition(new Vector2(99, 99));
-        MenuManager.m_instance.ShowHighlightedUnit(null);
+        GridManager.m_instance.ShowHighlightedUnit(null);
+        GridManager.m_instance.ShowHighlightedTile(null);
     }
 
     void OnMouseDown()
@@ -102,6 +110,7 @@ public class Tile : MonoBehaviour
             {
                 // The Player has a unit selected
                 UnitBase unit = UnitManager.m_instance.m_SelectedUnit;
+
                 if(unit.m_TileRange.Contains(this) && unit.m_Faction == UnitBase.Faction.Hero &&
                 !unit.m_Hasmoved && !unit.m_Moving && !unit.m_IsAttacking)
                 {

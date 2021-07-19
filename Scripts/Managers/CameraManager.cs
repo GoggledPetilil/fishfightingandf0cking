@@ -5,18 +5,43 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     public static CameraManager m_instance;
-    public float m_MovSpeed;
-    public float m_Threshold;
+    public float m_TravelTime;
+    public Vector2 followOffset;
+    private Vector2 threshold;
     public Vector2 m_Target; // The target the camera will be looking at.
+    private bool m_LockCam;
 
     void Awake()
     {
         m_instance = this;
+        threshold = CalculateThreshold();
     }
 
     void FixedUpdate()
     {
-        Move();
+        if(!m_LockCam)
+        {
+            Move();
+        }
+    }
+
+    void Move()
+    {
+        float xDiff = Vector2.Distance(Vector2.right * transform.position.x, Vector2.right * m_Target.x);
+        float yDiff = Vector2.Distance(Vector2.up * transform.position.y, Vector2.up * m_Target.y);
+
+        Vector3 newPos = transform.position;
+        if(Mathf.Abs(xDiff) >= threshold.x)
+        {
+            newPos.x = m_Target.x;
+        }
+        if(Mathf.Abs(yDiff) >= threshold.y)
+        {
+            newPos.y = m_Target.y;
+        }
+
+        transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime / m_TravelTime);
+
     }
 
     public void SetCameraTarget(Vector2 pos)
@@ -24,14 +49,25 @@ public class CameraManager : MonoBehaviour
         m_Target = new Vector2(pos.x - transform.position.x, pos.y - transform.position.y);
     }
 
-    void Move()
+    private Vector3 CalculateThreshold()
     {
-        if(Vector2.Distance(this.transform.position, m_Target) >= m_Threshold)
-        {
-            Vector3 target = new Vector3(m_Target.x, m_Target.y, this.transform.position.z);
-            float speed = m_MovSpeed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, target, speed);
-        }
+        Rect aspect = Camera.main.pixelRect;
+        Vector2 t = new Vector2(Camera.main.orthographicSize * aspect.width / aspect.height, Camera.main.orthographicSize);
+        t.x -= followOffset.x;
+        t.y -= followOffset.y;
 
+        return t;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Vector2 border = CalculateThreshold();
+        Gizmos.DrawWireCube(transform.position, new Vector3(border.x * 2, border.y * 2, 1));
+    }
+
+    public void LockCamera(bool state)
+    {
+        m_LockCam = state;
     }
 }
