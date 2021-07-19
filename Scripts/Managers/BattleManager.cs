@@ -25,4 +25,19 @@ public class BattleManager : MonoBehaviour
     {
 
     }
+
+    public void StartBattle(UnitBase attacker, UnitBase defender)
+    {
+        Debug.Log("Battle Started! " + attacker + " vs " + defender);
+        float distance = Vector2.Distance(attacker.transform.position, defender.transform.position);
+        if(distance > 1.2f)
+        {
+            // Defender is further than 1 tile away.
+            m_DefenderCounters = false;
+        }
+        else
+        {
+            m_DefenderCounters = true;
+        }
+    }
 }

@@ -9,6 +9,8 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField] private GameObject m_UnitInfoBox;
     [SerializeField] private GameObject m_UnitCommandMenu;
+    [SerializeField] private GameObject m_MeleeButton;
+    [SerializeField] private GameObject m_ShootButton;
 
     void Awake()
     {
@@ -34,5 +36,15 @@ public class MenuManager : MonoBehaviour
     public void ToggleUnitCommandMenu(bool state)
     {
         m_UnitCommandMenu.SetActive(state);
+    }
+
+    public void ToggleMeleeButton(bool state)
+    {
+        m_MeleeButton.SetActive(state);
+    }
+
+    public void ToggleShootButton(bool state)
+    {
+        m_ShootButton.SetActive(state);
     }
 }

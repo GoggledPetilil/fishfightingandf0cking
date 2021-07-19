@@ -14,7 +14,6 @@ public class UnitBase : MonoBehaviour
     public string m_UnitName;
     public Tile m_Occupying;
     public Faction m_Faction;
-    public GameObject m_Battler;
 
     [Header("Parameters")]
     public int m_MaxHP;
@@ -23,7 +22,7 @@ public class UnitBase : MonoBehaviour
     public int m_RangeAtk;
     public int m_Def;
     public int m_Mov;
-    public int m_Range;
+    public int m_ShootRange;
 
     [Header("Movement Data")]
     public bool m_Hasmoved = false; // When true, this unit's turn is over.
@@ -32,9 +31,16 @@ public class UnitBase : MonoBehaviour
     public Vector2 m_Velocity = new Vector2(); // How fast this unit is going.
     public Vector2 m_Destination = new Vector2(); // Where this unit will go towards.
     public List<Tile> m_TileRange = new List<Tile>();
-
+    // Exclusive to the AI:
     Stack<Tile> path = new Stack<Tile>();
     public Tile m_AITargetTile; // The target tile the AI will actually move to.
+
+
+    [Header("Battle Data")]
+    public bool m_IsAttacking; // This unit is currently trying to attack someone else.
+    public GameObject m_Battler;
+    public List<UnitBase> m_SelectableEnemies = new List<UnitBase>();
+
 
     [Header("Visuals")]
     public Animator m_Anim;
@@ -50,18 +56,18 @@ public class UnitBase : MonoBehaviour
         }
     }
 
-    public void ComputeAdjacencyList(Tile target)
+    public void ComputeAdjacencyList(Tile target, bool ignoreOccupied)
     {
         foreach(GameObject tile in GridManager.m_instance.m_Tiles)
         {
             Tile t = tile.GetComponent<Tile>();
-            t.FindNeighbours(target);
+            t.FindNeighbours(target, ignoreOccupied);
         }
     }
 
-    public void FindSelectableTiles()
+    public void FindSelectableTiles(int range)
     {
-        ComputeAdjacencyList(null);
+        ComputeAdjacencyList(null, true);
 
         Queue<Tile> process = new Queue<Tile>();
 
@@ -73,9 +79,8 @@ public class UnitBase : MonoBehaviour
             Tile t = process.Dequeue();
 
             m_TileRange.Add(t);
-            t.ChangeColor(Color.blue);
 
-            if(t.m_Distance < m_Mov)
+            if(t.m_Distance < range)
             {
                 foreach(Tile tile in t.m_AdjacentList)
                 {
@@ -88,6 +93,57 @@ public class UnitBase : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    public void GetAttackRange(int range)
+    {
+        ComputeAdjacencyList(null, false);
+        m_TileRange.Clear();
+        m_SelectableEnemies.Clear();
+
+        Queue<Tile> process = new Queue<Tile>();
+
+        process.Enqueue(m_Occupying);
+        m_Occupying.m_visited = true;
+
+        while(process.Count > 0)
+        {
+            Tile t = process.Dequeue();
+
+            m_TileRange.Add(t);
+
+            if(t.m_Distance < range)
+            {
+                foreach(Tile tile in t.m_AdjacentList)
+                {
+                    if(!tile.m_visited)
+                    {
+                        tile.m_LastTile = t;
+                        tile.m_visited = true;
+                        tile.m_Distance = 1 + t.m_Distance;
+                        process.Enqueue(tile);
+                    }
+                }
+            }
+        }
+
+        m_TileRange.Remove(m_Occupying);
+
+        foreach(Tile tile in m_TileRange)
+        {
+            if(tile.m_OccupiedUnit != null && tile.m_OccupiedUnit.m_Faction != m_Faction && !m_SelectableEnemies.Contains(tile.m_OccupiedUnit))
+            {
+                m_SelectableEnemies.Add(tile.m_OccupiedUnit);
+            }
+        }
+    }
+
+    public void ShowSelectableTiles(Color c)
+    {
+        foreach(Tile t in m_TileRange)
+        {
+            t.ChangeColor(c);
         }
     }
 
@@ -148,8 +204,61 @@ public class UnitBase : MonoBehaviour
             // This unit is a player, so give options.
             ClearTileList();
 
+            // Check for melee enemies.
+            GetAttackRange(1);
+            if(m_SelectableEnemies.Count > 0)
+            {
+                // Found melee enemies, so allow melee combat.
+                MenuManager.m_instance.ToggleMeleeButton(true);
+            }
+            else
+            {
+                // No melee enemies found.
+                MenuManager.m_instance.ToggleMeleeButton(false);
+            }
+
+            // Check for ranged enemies.
+            GetAttackRange(5);
+            if(m_SelectableEnemies.Count > 0)
+            {
+                // Found ranged enemies, so allow shooting.
+                MenuManager.m_instance.ToggleShootButton(true);
+            }
+            else
+            {
+                // No ranged enemies found. Disable Shoot.
+                MenuManager.m_instance.ToggleShootButton(false);
+            }
+
             MenuManager.m_instance.ToggleUnitCommandMenu(true);
         }
+    }
+
+    public void EndTurn()
+    {
+        m_Hasmoved = true;
+        m_IsAttacking = false;
+        ClearTileList();
+        float c = 0.32f;
+        m_sr.color = new Color(c, c, c, 1f);
+
+        if(m_Faction == Faction.Hero)
+        {
+            TurnManager.m_instance.CheckPlayerUnits();
+        }
+        else
+        {
+            // This is an enemy unit.
+            int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
+            TurnManager.m_instance.MoveNextEnemy(i + 1);
+        }
+    }
+
+    public void RefreshTurn()
+    {
+        m_Hasmoved = false;
+        m_IsAttacking = false;
+        m_sr.color = new Color(1f, 1f, 1f, 1f);
     }
 
     public void MoveAnimation()
@@ -180,6 +289,11 @@ public class UnitBase : MonoBehaviour
     {
         m_Velocity = m_Destination * m_MoveSpeed;
     }
+
+    // ########################################################################
+    // AI SHIT HERE
+    // YOU PROBABLY DON'T NEED TO TOUCH THESE
+    // ########################################################################
 
     protected Tile FindLowestF(List<Tile> list)
     {
@@ -223,7 +337,7 @@ public class UnitBase : MonoBehaviour
 
     protected void FindPath(Tile target)
     {
-        ComputeAdjacencyList(target);
+        ComputeAdjacencyList(target, true);
         GetTileUnder();
 
         List<Tile> openList = new List<Tile>();
@@ -274,30 +388,5 @@ public class UnitBase : MonoBehaviour
                 }
             }
         }
-    }
-
-    public void EndTurn()
-    {
-        m_Hasmoved = true;
-        ClearTileList();
-        float c = 0.32f;
-        m_sr.color = new Color(c, c, c, 1f);
-
-        if(m_Faction == Faction.Hero)
-        {
-            TurnManager.m_instance.CheckPlayerUnits();
-        }
-        else
-        {
-            // This is an enemy unit.
-            int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
-            TurnManager.m_instance.MoveNextEnemy(i + 1);
-        }
-    }
-
-    public void RefreshTurn()
-    {
-        m_Hasmoved = false;
-        m_sr.color = new Color(1f, 1f, 1f, 1f);
     }
 }

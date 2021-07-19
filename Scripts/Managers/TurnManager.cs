@@ -105,7 +105,8 @@ public class TurnManager : MonoBehaviour
 
             enemy.FindNearestTarget();
             enemy.CalculatePath();
-            enemy.FindSelectableTiles();
+            enemy.FindSelectableTiles(enemy.m_Mov);
+            enemy.ShowSelectableTiles(Color.blue);
         }
         else
         {

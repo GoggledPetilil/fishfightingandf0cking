@@ -78,8 +78,17 @@ public class Tile : MonoBehaviour
             }
             else
             {
-                // Occupying unit is an enemy, so display enemy's move range.
-                UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
+                // Occupying unit is an enemy.
+                if(UnitManager.m_instance.m_SelectedUnit == null || UnitManager.m_instance.m_SelectedUnit.m_IsAttacking == false)
+                {
+                    // The player is not trying to attack this enemy, so display range.
+                    UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
+                }
+                else
+                {
+                    // The player has an attacking unit selected, attack this enemy.
+                    BattleManager.m_instance.StartBattle((Hero)UnitManager.m_instance.m_SelectedUnit, (Enemy)m_OccupiedUnit);
+                }
             }
         }
         else
@@ -89,14 +98,15 @@ public class Tile : MonoBehaviour
             {
                 // The Player has a unit selected
                 UnitBase unit = UnitManager.m_instance.m_SelectedUnit;
-                if(unit.m_TileRange.Contains(this) && !unit.m_Hasmoved && !unit.m_Moving && unit.m_Faction == UnitBase.Faction.Hero)
+                if(unit.m_TileRange.Contains(this) && unit.m_Faction == UnitBase.Faction.Hero &&
+                !unit.m_Hasmoved && !unit.m_Moving && !unit.m_IsAttacking)
                 {
                     // The selected Player unit will now move to this tile.
                     UnitManager.m_instance.m_SelectedUnit.MoveToTile(this);
                     GridManager.m_instance.TileClickAllowed(false);
                     GridManager.m_instance.ToggleCursor(false);
                 }
-                else
+                else if(UnitManager.m_instance.m_SelectedUnit.m_IsAttacking == false)
                 {
                     // Player clicked a tile out of range or had an enemy selected, so deselect the unit.
                     UnitManager.m_instance.SetSelectedHero(null);
@@ -110,13 +120,13 @@ public class Tile : MonoBehaviour
         m_sr.color = c;
     }
 
-    public void FindNeighbours(Tile target)
+    public void FindNeighbours(Tile target, bool ignoreOccupied)
     {
         Reset();
-        CheckTile(Vector2.up, target);
-        CheckTile(Vector2.down, target);
-        CheckTile(Vector2.right, target);
-        CheckTile(-Vector2.right, target);
+        CheckTile(Vector2.up, target, ignoreOccupied);
+        CheckTile(Vector2.down, target, ignoreOccupied);
+        CheckTile(Vector2.right, target, ignoreOccupied);
+        CheckTile(-Vector2.right, target, ignoreOccupied);
     }
 
     public void Reset()
@@ -130,7 +140,7 @@ public class Tile : MonoBehaviour
         f = g = h = 0f;
     }
 
-    public void CheckTile(Vector2 direction, Tile target)
+    public void CheckTile(Vector2 direction, Tile target, bool ignoreOccupied)
     {
         Vector2 size = new Vector2(0.25f, 0.25f);
         Vector3 p = new Vector3(transform.position.x + direction.x, transform.position.y + direction.y, transform.position.z);
@@ -139,7 +149,7 @@ public class Tile : MonoBehaviour
         foreach(Collider2D item in colliders)
         {
             Tile tile = item.GetComponent<Tile>();
-            if(tile != null && tile.m_IsWalkable || tile == target)
+            if(tile != null && (tile.m_IsWalkable && ignoreOccupied || !ignoreOccupied) || tile == target)
             {
                 m_AdjacentList.Add(tile);
             }

@@ -29,7 +29,8 @@ public class UnitManager : MonoBehaviour
         else
         {
             m_SelectedUnit = unit;
-            unit.FindSelectableTiles();
+            unit.FindSelectableTiles(unit.m_Mov);
+            unit.ShowSelectableTiles(Color.blue);
         }
     }
 
@@ -43,12 +44,28 @@ public class UnitManager : MonoBehaviour
 
     public void SelectedUnitAttacks()
     {
-        SelectedUnitWaits();
+        m_SelectedUnit.m_IsAttacking = true;
+        m_SelectedUnit.GetAttackRange(1);
+        m_SelectedUnit.ShowSelectableTiles(Color.red);
+
+        GridManager.m_instance.TileClickAllowed(true);
+        GridManager.m_instance.ToggleCursor(true);
+        MenuManager.m_instance.ToggleUnitCommandMenu(false);
+
+        // The unit will now be allowed to click a valid tile to attack an enemy.
     }
 
     public void SelectedUnitShoots()
     {
-        SelectedUnitWaits();
+        m_SelectedUnit.m_IsAttacking = true;
+        m_SelectedUnit.GetAttackRange(m_SelectedUnit.m_ShootRange);
+        m_SelectedUnit.ShowSelectableTiles(Color.red);
+
+        GridManager.m_instance.TileClickAllowed(true);
+        GridManager.m_instance.ToggleCursor(true);
+        MenuManager.m_instance.ToggleUnitCommandMenu(false);
+
+        // The unit will now be allowed to click a valid tile to attack an enemy.
     }
 
     public void SelectedUnitWaits()
