@@ -13,10 +13,20 @@ public class UnitManager : MonoBehaviour
         m_instance = this;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Update()
     {
+        if(m_SelectedUnit != null && TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase && !m_SelectedUnit.m_Moving
+        && Input.GetMouseButtonDown(1))
+        {
+            m_SelectedUnit.m_OriginTile.SetUnit(m_SelectedUnit);
+            m_SelectedUnit.m_IsAttacking = false;
+            SetSelectedHero(null);
 
+            MenuManager.m_instance.ToggleUnitCommandMenu(false);
+            MenuManager.m_instance.ToggleEndButton(true);
+            GridManager.m_instance.TileClickAllowed(true);
+            GridManager.m_instance.ToggleCursor(true);
+        }
     }
 
     public void SetSelectedHero(UnitBase unit)
@@ -31,6 +41,7 @@ public class UnitManager : MonoBehaviour
             m_SelectedUnit = unit;
             unit.FindSelectableTiles(unit.m_Mov);
             unit.ShowSelectableTiles(GridManager.m_instance.m_MoveTileColor);
+            MenuManager.m_instance.ToggleEndButton(false);
         }
     }
 
@@ -46,7 +57,7 @@ public class UnitManager : MonoBehaviour
     {
         m_SelectedUnit.m_IsAttacking = true;
         m_SelectedUnit.GetAttackRange(1);
-        m_SelectedUnit.ShowSelectableTiles(GridManager.m_instance.m_AttackTileColor);
+        m_SelectedUnit.ColorValidTargets();
 
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
@@ -59,11 +70,15 @@ public class UnitManager : MonoBehaviour
     {
         m_SelectedUnit.m_IsAttacking = true;
         m_SelectedUnit.GetAttackRange(m_SelectedUnit.m_ShootRange);
-        m_SelectedUnit.ShowSelectableTiles(GridManager.m_instance.m_AttackTileColor);
+        UnitBase t = m_SelectedUnit.GetClosestTarget();
+        m_SelectedUnit.m_SelectableEnemies.Clear();
+        m_SelectedUnit.m_SelectableEnemies.Add(t);
+        m_SelectedUnit.ColorValidTargets();
 
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
         MenuManager.m_instance.ToggleUnitCommandMenu(false);
+
 
         // The unit will now be allowed to click a valid tile to attack an enemy.
     }
@@ -71,6 +86,7 @@ public class UnitManager : MonoBehaviour
     public void SelectedUnitWaits()
     {
         MenuManager.m_instance.ToggleUnitCommandMenu(false);
+        MenuManager.m_instance.ToggleEndButton(true);
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
         CameraManager.m_instance.LockCamera(false);

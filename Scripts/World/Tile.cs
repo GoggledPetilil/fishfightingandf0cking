@@ -64,7 +64,7 @@ public class Tile : MonoBehaviour
         GridManager.m_instance.ShowHighlightedTile(null);
     }
 
-    void OnMouseDown()
+    public void OnMouseDown()
     {
         // You can't click on tiles if you don't have permission to lol
         if(GridManager.m_instance.m_CanClick == false) return;
@@ -96,7 +96,7 @@ public class Tile : MonoBehaviour
                     // The player is not trying to attack this enemy, so display range.
                     UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
                 }
-                else
+                else if(UnitManager.m_instance.m_SelectedUnit.m_SelectableEnemies.Contains(m_OccupiedUnit))
                 {
                     // The player has an attacking unit selected, attack this enemy.
                     BattleManager.m_instance.StartBattle((Hero)UnitManager.m_instance.m_SelectedUnit, (Enemy)m_OccupiedUnit);

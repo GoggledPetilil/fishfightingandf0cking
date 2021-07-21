@@ -218,7 +218,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UnitName: SOLDIER
   m_Occupying: {fileID: 0}
+  m_OriginTile: {fileID: 0}
   m_Faction: 1
+  m_BattleSprite: {fileID: 21300000, guid: a4930d1701abce0598782722daee2b17, type: 3}
   m_HealthBar: {fileID: 8273823252027058655}
   m_MaxHP: 10
   m_HP: 10
@@ -226,7 +228,7 @@ MonoBehaviour:
   m_RangeAtk: 1
   m_Def: 0
   m_Mov: 3
-  m_ShootRange: 0
+  m_ShootRange: 5
   m_MeleeBuff: 0
   m_RangeBuff: 0
   m_DefBuff: 0
@@ -238,7 +240,6 @@ MonoBehaviour:
   m_TileRange: []
   m_AITargetTile: {fileID: 0}
   m_IsAttacking: 0
-  m_Battler: {fileID: 9051524102817068992, guid: 0730a0477fee645a3aedfc2e352bf958, type: 3}
   m_SelectableEnemies: []
   m_Anim: {fileID: 2848450696883356366}
   m_sr: {fileID: 7443700639620712001}

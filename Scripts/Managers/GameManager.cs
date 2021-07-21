@@ -5,15 +5,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager m_instance;
+    public int m_PlayerFunds;
+    public int m_EnemyFunds;
 
     void Awake()
     {
         m_instance = this;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
     }
 }

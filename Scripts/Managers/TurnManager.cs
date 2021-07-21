@@ -90,6 +90,8 @@ public class TurnManager : MonoBehaviour
             GridManager.m_instance.ToggleCursor(true);
             GridManager.m_instance.TileClickAllowed(true);
             MenuManager.m_instance.ToggleEndButton(true);
+
+            CameraManager.m_instance.SetCameraTarget(m_PlayerUnits[0].transform.position);
         }
 
         foreach(Hero hero in m_PlayerUnits)

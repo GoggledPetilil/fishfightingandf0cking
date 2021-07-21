@@ -13,7 +13,9 @@ public class UnitBase : MonoBehaviour
     [Header("Unit Info")]
     public string m_UnitName;
     public Tile m_Occupying;
+    public Tile m_OriginTile;
     public Faction m_Faction;
+    public Sprite m_BattleSprite;
     public HealthBar m_HealthBar;
 
     [Header("Parameters")]
@@ -44,7 +46,6 @@ public class UnitBase : MonoBehaviour
 
     [Header("Battle Data")]
     public bool m_IsAttacking; // This unit is currently trying to attack someone else.
-    public GameObject m_Battler;
     public List<UnitBase> m_SelectableEnemies = new List<UnitBase>();
 
 
@@ -83,6 +84,10 @@ public class UnitBase : MonoBehaviour
         {
             Tile tile = hit.collider.gameObject.GetComponent<Tile>();
             tile.SetUnit(this);
+            if(m_OriginTile == null)
+            {
+                m_OriginTile = m_Occupying;
+            }
         }
     }
 
@@ -169,6 +174,72 @@ public class UnitBase : MonoBehaviour
         }
     }
 
+    public void ColorValidTargets()
+    {
+        foreach(Tile t in m_TileRange)
+        {
+            if(t.m_OccupiedUnit != null && m_SelectableEnemies.Contains(t.m_OccupiedUnit))
+            {
+                t.ChangeColor(GridManager.m_instance.m_TargetTileColor);
+            }
+            else
+            {
+                t.ChangeColor(GridManager.m_instance.m_AttackTileColor);
+            }
+        }
+    }
+
+    private UnitBase GetWeakestTarget()
+    {
+        UnitBase weakest;
+
+        if(m_SelectableEnemies.Count > 0)
+        {
+            weakest = m_SelectableEnemies[0];
+            foreach(UnitBase unit in m_SelectableEnemies)
+            {
+                int power = unit.m_HP + unit.GetDefence();
+                int weakestPower = weakest.m_HP + weakest.GetDefence();
+                if(power < weakestPower)
+                {
+                    weakest = unit;
+                }
+            }
+        }
+        else
+        {
+            weakest = null;
+        }
+
+        return weakest;
+    }
+
+    public UnitBase GetClosestTarget()
+    {
+        UnitBase farthestUnit;
+
+        if(m_SelectableEnemies.Count > 0)
+        {
+            farthestUnit = m_SelectableEnemies[0];
+            foreach(UnitBase unit in m_SelectableEnemies)
+            {
+                float distance = Vector2.Distance(this.transform.position, unit.transform.position);
+                float distanceKnown = Vector2.Distance(this.transform.position, farthestUnit.transform.position);
+
+                if(distance < distanceKnown)
+                {
+                    farthestUnit = unit;
+                }
+            }
+        }
+        else
+        {
+            farthestUnit = null;
+        }
+
+        return farthestUnit;
+    }
+
     public void ShowSelectableTiles(Color c)
     {
         foreach(Tile t in m_TileRange)
@@ -225,9 +296,33 @@ public class UnitBase : MonoBehaviour
 
         if(m_Faction == Faction.Enemy)
         {
-            // The enemy will Wait after their turn is over.
-            UnitManager.m_instance.SetSelectedHero(null);
-            EndTurn();
+            // This is an enemy, so check available options.
+
+            // Checking if there are enemies next to this unit.
+            GetAttackRange(1);
+            if(m_SelectableEnemies.Count > 0)
+            {
+                // Found melee enemies, so engage in melee combat.
+                UnitBase target = GetWeakestTarget();
+                BattleManager.m_instance.StartBattle(this, target);
+            }
+            else
+            {
+                // No melee enemies found, so try shooting.
+                GetAttackRange(m_ShootRange);
+                if(m_SelectableEnemies.Count > 0)
+                {
+                    // ranged enemies found, so engage in combat.
+                    UnitBase target = GetClosestTarget();
+                    BattleManager.m_instance.StartBattle(this, target);
+                }
+                else
+                {
+                  // Can't do anything, so wait.
+                  UnitManager.m_instance.SetSelectedHero(null);
+                  EndTurn();
+                }
+            }
         }
         else
         {
@@ -268,6 +363,7 @@ public class UnitBase : MonoBehaviour
     {
         m_Hasmoved = true;
         m_IsAttacking = false;
+        m_OriginTile = m_Occupying;
         ClearTileList();
         float c = 0.32f;
         m_sr.color = new Color(c, c, c, 1f);
@@ -293,8 +389,11 @@ public class UnitBase : MonoBehaviour
 
     public void Die()
     {
+        m_Hasmoved = true;
+        m_IsAttacking = false;
         ClearTileList();
         EffectsManager.m_instance.SpawnExplosion(this.transform.position);
+        CameraManager.m_instance.LockCamera(true);
         this.gameObject.transform.position = new Vector2(99, 99); // Get this dude off-screen.
 
         // Make the rest of the logic happen.
@@ -305,9 +404,15 @@ public class UnitBase : MonoBehaviour
         }
         else
         {
+            if(TurnManager.m_instance.m_Phase == TurnManager.Phase.EnemyPhase)
+            {
+                int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
+                TurnManager.m_instance.MoveNextEnemy(i + 1);
+            }
             TurnManager.m_instance.DeleteEnemy((Enemy)this);
         }
         Destroy(this.gameObject);
+        CameraManager.m_instance.LockCamera(false);
     }
 
     public void MoveAnimation()
