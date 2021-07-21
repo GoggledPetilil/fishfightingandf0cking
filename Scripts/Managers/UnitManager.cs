@@ -35,6 +35,10 @@ public class UnitManager : MonoBehaviour
         if(unit == null)
         {
             m_SelectedUnit = unit;
+            if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+            {
+                MenuManager.m_instance.ToggleEndButton(true);
+            }
         }
         else
         {

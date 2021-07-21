@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class TurnManager : MonoBehaviour
 {
@@ -18,6 +20,12 @@ public class TurnManager : MonoBehaviour
 
     public Enemy m_CurrentlyMoving;
 
+    [Header("Phase Change Assets")]
+    [SerializeField] private GameObject m_PhaseHolder;
+    [SerializeField] private TMP_Text m_PhaseText;
+    [SerializeField] private Image m_TopBorder;
+    [SerializeField] private Image m_BottomBorder;
+
     void Awake()
     {
         m_instance = this;
@@ -26,7 +34,8 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_Phase = Phase.PlayerPhase;
+        m_Phase = Phase.EnemyPhase;
+        SwitchPhase();
     }
 
     public void AddHeroUnit(Hero unit)
@@ -69,27 +78,65 @@ public class TurnManager : MonoBehaviour
 
     public void SwitchPhase()
     {
+        GridManager.m_instance.ToggleCursor(false);
+        GridManager.m_instance.TileClickAllowed(false);
+        GridManager.m_instance.ShowHighlightedTile(null);
+        MenuManager.m_instance.ToggleEndButton(false);
+
         if(m_Phase == Phase.PlayerPhase)
         {
             // It is now Enemy Phase
             m_Phase = Phase.EnemyPhase;
-
-            GridManager.m_instance.ToggleCursor(false);
-            GridManager.m_instance.TileClickAllowed(false);
-            GridManager.m_instance.ShowHighlightedTile(null);
-            MenuManager.m_instance.ToggleEndButton(false);
-
-            MoveNextEnemy(0);
+            PhaseAnnouncement();
 
         }
         else
         {
             // It is now Player Phase
             m_Phase = Phase.PlayerPhase;
+            PhaseAnnouncement();
+        }
+    }
 
+    void PhaseAnnouncement()
+    {
+        Color c;
+        if(m_Phase == Phase.PlayerPhase)
+        {
+            c = Color.red;
+            m_PhaseText.text = "PLAYER PHASE";
+        }
+        else
+        {
+            c = Color.blue;
+            m_PhaseText.text = "ENEMY PHASE";
+        }
+        m_TopBorder.color = c;
+        m_BottomBorder.color = c;
+        m_PhaseText.outlineColor = c;
+
+        Animator anim = m_PhaseHolder.GetComponent<Animator>();
+        m_PhaseHolder.SetActive(true);
+        anim.Play("PhaseChange");
+
+        StartCoroutine("PhaseAnimation");
+    }
+
+    void SwitchPhaseLogic()
+    {
+        if(m_Phase == Phase.EnemyPhase)
+        {
+            // It is now Enemy Phase
+            MoveNextEnemy(0);
+            Debug.Log(m_EnemyUnits[0].gameObject.name);
+        }
+        else
+        {
+            // It is now Player Phase
             GridManager.m_instance.ToggleCursor(true);
             GridManager.m_instance.TileClickAllowed(true);
             MenuManager.m_instance.ToggleEndButton(true);
+            GameManager.m_instance.ChangePlayerFunds(GameManager.m_instance.m_MoneyPerTurn);
 
             CameraManager.m_instance.SetCameraTarget(m_PlayerUnits[0].transform.position);
         }
@@ -105,11 +152,17 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    private IEnumerator PhaseAnimation()
+    {
+        yield return new WaitForSecondsRealtime(0.7f);
+        m_PhaseHolder.SetActive(false);
+        SwitchPhaseLogic();
+    }
+
     public void MoveNextEnemy(int index)
     {
         if(index < m_EnemyUnits.Count)
         {
-
             Enemy enemy = m_EnemyUnits[index];
 
             enemy.RefreshTurn();
@@ -125,6 +178,7 @@ public class TurnManager : MonoBehaviour
         else
         {
             // The last enemy has already moved, so switch phase.
+            m_CurrentlyMoving = null;
             SwitchPhase();
         }
     }

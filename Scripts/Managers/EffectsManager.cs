@@ -9,6 +9,7 @@ public class EffectsManager : MonoBehaviour
     [Header("Effects")]
     [SerializeField] private GameObject m_TextPopUp;
     [SerializeField] private GameObject m_Explosion;
+    [SerializeField] private GameObject m_EggHatch;
 
     void Awake()
     {
@@ -24,5 +25,10 @@ public class EffectsManager : MonoBehaviour
     public void SpawnExplosion(Vector2 pos)
     {
         Instantiate(m_Explosion, pos, Quaternion.identity);
+    }
+
+    public void SpawnEgg(Vector2 pos)
+    {
+        Instantiate(m_EggHatch, pos, Quaternion.identity);
     }
 }

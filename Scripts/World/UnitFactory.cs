@@ -78,6 +78,7 @@ public class UnitFactory : Tile
     public void SpawnNewUnit(GameObject unitPrefab)
     {
         GameObject unit = Instantiate(unitPrefab, this.transform.position, Quaternion.identity) as GameObject;
+        EffectsManager.m_instance.SpawnEgg(this.transform.position);
         if(m_isPlayerFactory)
         {
             Hero ub = unit.GetComponent<Hero>();

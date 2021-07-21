@@ -74,7 +74,7 @@ public class UnitBase : MonoBehaviour
 
     public int GetDefence()
     {
-        return m_Def + m_DefBuff;
+        return m_Def + m_DefBuff + m_Occupying.m_DefBoost;
     }
 
     public void GetTileUnder()
@@ -298,17 +298,10 @@ public class UnitBase : MonoBehaviour
         {
             // This is an enemy, so check available options.
 
-            // Checking if there are enemies next to this unit.
-            GetAttackRange(1);
-            if(m_SelectableEnemies.Count > 0)
+            if(m_RangeAtk >= m_MeleeAtk)
             {
-                // Found melee enemies, so engage in melee combat.
-                UnitBase target = GetWeakestTarget();
-                BattleManager.m_instance.StartBattle(this, target);
-            }
-            else
-            {
-                // No melee enemies found, so try shooting.
+                // The enemy's shoot power is better than their melee atk, so shoot.
+                // Check if there are any ranged enemies at all.
                 GetAttackRange(m_ShootRange);
                 if(m_SelectableEnemies.Count > 0)
                 {
@@ -321,6 +314,35 @@ public class UnitBase : MonoBehaviour
                   // Can't do anything, so wait.
                   UnitManager.m_instance.SetSelectedHero(null);
                   EndTurn();
+                }
+            }
+            else
+            {
+                // This unit is a better melee fighter.
+                // Checking if there are enemies next to this unit.
+                GetAttackRange(1);
+                if(m_SelectableEnemies.Count > 0)
+                {
+                    // Found melee enemies, so engage in melee combat.
+                    UnitBase target = GetWeakestTarget();
+                    BattleManager.m_instance.StartBattle(this, target);
+                }
+                else
+                {
+                    // No melee enemies, so try shooting.
+                    GetAttackRange(m_ShootRange);
+                    if(m_SelectableEnemies.Count > 0)
+                    {
+                        // ranged enemies found, so engage in combat.
+                        UnitBase target = GetClosestTarget();
+                        BattleManager.m_instance.StartBattle(this, target);
+                    }
+                    else
+                    {
+                      // Can't do anything, so wait.
+                      UnitManager.m_instance.SetSelectedHero(null);
+                      EndTurn();
+                    }
                 }
             }
         }
@@ -343,7 +365,7 @@ public class UnitBase : MonoBehaviour
             }
 
             // Check for ranged enemies.
-            GetAttackRange(5);
+            GetAttackRange(m_ShootRange);
             if(m_SelectableEnemies.Count > 0)
             {
                 // Found ranged enemies, so allow shooting.
@@ -391,9 +413,10 @@ public class UnitBase : MonoBehaviour
     {
         m_Hasmoved = true;
         m_IsAttacking = false;
+        CameraManager.m_instance.LockCamera(true);
         ClearTileList();
         EffectsManager.m_instance.SpawnExplosion(this.transform.position);
-        CameraManager.m_instance.LockCamera(true);
+        CameraManager.m_instance.SetCameraTarget(this.transform.position);
         this.gameObject.transform.position = new Vector2(99, 99); // Get this dude off-screen.
 
         // Make the rest of the logic happen.

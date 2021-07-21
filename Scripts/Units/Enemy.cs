@@ -24,11 +24,14 @@ public class Enemy : UnitBase
         if(m_Moving)
         {
             Move();
-            CameraManager.m_instance.SetCameraTarget(transform.position);
+            if(m_HP > 0)
+            {
+                CameraManager.m_instance.SetCameraTarget(transform.position);
+            }
         }
         else if(TurnManager.m_instance.m_Phase == TurnManager.Phase.EnemyPhase && !m_Moving && TurnManager.m_instance.m_CurrentlyMoving == this)
         {
-            m_Moving = true;
+            FinishedMoving();
             Debug.Log(this.gameObject.name + ": Oops I'm standing around like an idiot!");
         }
     }
