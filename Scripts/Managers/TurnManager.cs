@@ -78,24 +78,28 @@ public class TurnManager : MonoBehaviour
 
     public void SwitchPhase()
     {
-        GridManager.m_instance.ToggleCursor(false);
-        GridManager.m_instance.TileClickAllowed(false);
-        GridManager.m_instance.ShowHighlightedTile(null);
-        MenuManager.m_instance.ToggleEndButton(false);
-
-        if(m_Phase == Phase.PlayerPhase)
+        if(m_PlayerUnits.Count > 0 && m_EnemyUnits.Count > 0)
         {
-            // It is now Enemy Phase
-            m_Phase = Phase.EnemyPhase;
-            PhaseAnnouncement();
+            GridManager.m_instance.ToggleCursor(false);
+            GridManager.m_instance.TileClickAllowed(false);
+            GridManager.m_instance.ShowHighlightedTile(null);
+            MenuManager.m_instance.ToggleEndButton(false);
 
+            if(m_Phase == Phase.PlayerPhase)
+            {
+                // It is now Enemy Phase
+                m_Phase = Phase.EnemyPhase;
+                PhaseAnnouncement();
+
+            }
+            else
+            {
+                // It is now Player Phase
+                m_Phase = Phase.PlayerPhase;
+                PhaseAnnouncement();
+            }
         }
-        else
-        {
-            // It is now Player Phase
-            m_Phase = Phase.PlayerPhase;
-            PhaseAnnouncement();
-        }
+
     }
 
     void PhaseAnnouncement()
@@ -105,11 +109,13 @@ public class TurnManager : MonoBehaviour
         {
             c = Color.red;
             m_PhaseText.text = "PLAYER PHASE";
+            SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_PlayerPhase);
         }
         else
         {
             c = Color.blue;
             m_PhaseText.text = "ENEMY PHASE";
+            SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_EnemyPhase);
         }
         m_TopBorder.color = c;
         m_BottomBorder.color = c;

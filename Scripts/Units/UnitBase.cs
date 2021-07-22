@@ -60,6 +60,7 @@ public class UnitBase : MonoBehaviour
         m_HealthBar.SetHealthBar(m_MaxHP, m_HP);
 
         EffectsManager.m_instance.SpawnPopUp(transform.position, damage.ToString());
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_UnitDamage);
     }
 
     public int GetMeleeAtk()
@@ -415,6 +416,7 @@ public class UnitBase : MonoBehaviour
         m_IsAttacking = false;
         CameraManager.m_instance.LockCamera(true);
         ClearTileList();
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_UnitDeath);
         EffectsManager.m_instance.SpawnExplosion(this.transform.position);
         CameraManager.m_instance.SetCameraTarget(this.transform.position);
         this.gameObject.transform.position = new Vector2(99, 99); // Get this dude off-screen.

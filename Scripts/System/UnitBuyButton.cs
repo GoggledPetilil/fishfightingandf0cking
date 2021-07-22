@@ -44,6 +44,7 @@ public class UnitBuyButton : MonoBehaviour
     public void BuyThisUnit()
     {
         // This method is called when the button is pressed. So assume funds are sorted.
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
         GameManager.m_instance.ChangePlayerFunds(-m_Price);
         GridManager.m_instance.m_PlayerFactory.SpawnNewUnit(m_UnitPrefab);
 

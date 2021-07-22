@@ -26,6 +26,8 @@ public class UnitManager : MonoBehaviour
             MenuManager.m_instance.ToggleEndButton(true);
             GridManager.m_instance.TileClickAllowed(true);
             GridManager.m_instance.ToggleCursor(true);
+
+            SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Cancel);
         }
     }
 

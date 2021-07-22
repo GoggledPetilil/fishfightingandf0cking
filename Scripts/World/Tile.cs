@@ -50,6 +50,7 @@ public class Tile : MonoBehaviour
         (u != null && u.m_IsAttacking && !u.m_TileRange.Contains(this))) return;
 
         GridManager.m_instance.SetCursorPosition(transform.position);
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Cursor);
         CameraManager.m_instance.SetCameraTarget(new Vector2(transform.position.x, transform.position.y));
         GridManager.m_instance.ShowHighlightedUnit(m_OccupiedUnit);
         GridManager.m_instance.ShowHighlightedTile(this);
@@ -68,6 +69,8 @@ public class Tile : MonoBehaviour
     {
         // You can't click on tiles if you don't have permission to lol
         if(GridManager.m_instance.m_CanClick == false) return;
+
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
 
         if(m_OccupiedUnit != null)
         {
