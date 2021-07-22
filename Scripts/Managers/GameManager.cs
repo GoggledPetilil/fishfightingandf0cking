@@ -41,12 +41,12 @@ public class GameManager : MonoBehaviour
     {
         // Will check if m_Chapter is higher than the player save's chapter num
         // If yes, set it to this. If not, just ignore.
-
+        LevelManager.m_instance.LoadNewLevel("MainMenu");
 
     }
 
     public void LoseGame()
     {
-
+        LevelManager.m_instance.LoadNewLevel("MainMenu");
     }
 }

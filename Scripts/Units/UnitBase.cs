@@ -423,16 +423,34 @@ public class UnitBase : MonoBehaviour
         if(m_Faction == Faction.Hero)
         {
             TurnManager.m_instance.DeleteHero((Hero)this);
-            TurnManager.m_instance.CheckPlayerUnits();
+            if(TurnManager.m_instance.m_PlayerUnits.Count > 0)
+            {
+                TurnManager.m_instance.CheckPlayerUnits();
+            }
+            else
+            {
+                GameManager.m_instance.LoseGame();
+                return;
+            }
         }
         else
         {
             if(TurnManager.m_instance.m_Phase == TurnManager.Phase.EnemyPhase)
             {
-                int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
-                TurnManager.m_instance.MoveNextEnemy(i + 1);
+                // It has to check if there are more than 1 enemies left, because this enemy is deleted later.
+                if(TurnManager.m_instance.m_EnemyUnits.Count > 1)
+                {
+                    int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
+                    TurnManager.m_instance.MoveNextEnemy(i + 1);
+                }
             }
             TurnManager.m_instance.DeleteEnemy((Enemy)this);
+
+            if(TurnManager.m_instance.m_EnemyUnits.Count <= 0)
+            {
+                GameManager.m_instance.WinGame();
+                return;
+            }
         }
         Destroy(this.gameObject);
         CameraManager.m_instance.LockCamera(false);

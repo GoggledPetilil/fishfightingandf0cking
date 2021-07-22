@@ -12,7 +12,7 @@ public class TitleScreen : MonoBehaviour
     {
         if(m_IntroFlag.activeSelf == false && Input.GetMouseButtonDown(0))
         {
-            SceneManager.LoadScene("SampleScene");
+            LevelManager.m_instance.LoadNewLevel("MainMenu");
         }
     }
 }
