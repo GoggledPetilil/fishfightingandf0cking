@@ -46,18 +46,18 @@ public class UnitBuyButton : MonoBehaviour
         // This method is called when the button is pressed. So assume funds are sorted.
         SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
         GameManager.m_instance.ChangePlayerFunds(-m_Price);
-        GridManager.m_instance.m_PlayerFactory.SpawnNewUnit(m_UnitPrefab);
+        GridManager.m_instance.SpawnNewUnit(m_UnitPrefab);
 
-        GridManager.m_instance.m_PlayerFactory.CloseFactoryMenu();
+        MenuManager.m_instance.CloseFactoryMenu();
     }
 
     public void OnMouseEnter()
     {
-        GridManager.m_instance.m_PlayerFactory.ShowPreviewUnit(m_UnitPrefab.GetComponent<UnitBase>());
+        MenuManager.m_instance.ShowPreviewUnit(m_UnitPrefab.GetComponent<UnitBase>());
     }
 
     public void OnMouseExit()
     {
-        GridManager.m_instance.m_PlayerFactory.HidePreviewUnit();
+        MenuManager.m_instance.HidePreviewUnit();
     }
 }

@@ -60,22 +60,6 @@ public class TurnManager : MonoBehaviour
         m_EnemyUnits.RemoveAt(i);
     }
 
-    public void CheckPlayerUnits()
-    {
-        int i = 0;
-        foreach(UnitBase unit in m_PlayerUnits)
-        {
-            if(unit.m_Hasmoved)
-            {
-                i++;
-                if(i >= m_PlayerUnits.Count)
-                {
-                    SwitchPhase();
-                }
-            }
-        }
-    }
-
     public void SwitchPhase()
     {
         if(m_PlayerUnits.Count > 0 && m_EnemyUnits.Count > 0)
@@ -134,7 +118,6 @@ public class TurnManager : MonoBehaviour
         {
             // It is now Enemy Phase
             MoveNextEnemy(0);
-            Debug.Log(m_EnemyUnits[0].gameObject.name);
         }
         else
         {
@@ -149,7 +132,14 @@ public class TurnManager : MonoBehaviour
 
         foreach(Hero hero in m_PlayerUnits)
         {
-            hero.RefreshTurn();
+            if(hero != null)
+            {
+                hero.RefreshTurn();
+            }
+            else
+            {
+                m_PlayerUnits.Remove(hero);
+            }
         }
 
         foreach(Enemy enemy in m_EnemyUnits)

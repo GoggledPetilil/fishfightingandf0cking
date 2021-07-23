@@ -7,7 +7,7 @@ public class CameraManager : MonoBehaviour
     public static CameraManager m_instance;
     public float m_TravelTime;
     public Vector2 followOffset;
-    private Vector2 threshold;
+    public Vector2 threshold;
     public Vector2 m_Target; // The target the camera will be looking at.
     private bool m_LockCam;
 
@@ -46,7 +46,7 @@ public class CameraManager : MonoBehaviour
 
     public void SetCameraTarget(Vector2 pos)
     {
-        m_Target = new Vector2(pos.x - transform.position.x, pos.y - transform.position.y);
+        m_Target = pos;
     }
 
     private Vector3 CalculateThreshold()

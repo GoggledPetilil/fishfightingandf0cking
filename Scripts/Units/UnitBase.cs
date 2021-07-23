@@ -48,7 +48,6 @@ public class UnitBase : MonoBehaviour
     public bool m_IsAttacking; // This unit is currently trying to attack someone else.
     public List<UnitBase> m_SelectableEnemies = new List<UnitBase>();
 
-
     [Header("Visuals")]
     public Animator m_Anim;
     public SpriteRenderer m_sr;
@@ -391,15 +390,11 @@ public class UnitBase : MonoBehaviour
         float c = 0.32f;
         m_sr.color = new Color(c, c, c, 1f);
 
-        if(m_Faction == Faction.Hero)
+        if(m_Faction == Faction.Enemy)
         {
-            TurnManager.m_instance.CheckPlayerUnits();
-        }
-        else
-        {
-            // This is an enemy unit.
-            int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
-            TurnManager.m_instance.MoveNextEnemy(i + 1);
+          // This is an enemy unit.
+          int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
+          TurnManager.m_instance.MoveNextEnemy(i + 1);
         }
     }
 
@@ -425,11 +420,7 @@ public class UnitBase : MonoBehaviour
         if(m_Faction == Faction.Hero)
         {
             TurnManager.m_instance.DeleteHero((Hero)this);
-            if(TurnManager.m_instance.m_PlayerUnits.Count > 0)
-            {
-                TurnManager.m_instance.CheckPlayerUnits();
-            }
-            else
+            if(TurnManager.m_instance.m_PlayerUnits.Count < 1)
             {
                 GameManager.m_instance.LoseGame();
                 return;

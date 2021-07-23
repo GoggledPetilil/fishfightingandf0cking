@@ -64,6 +64,7 @@ public class BattleManager : MonoBehaviour
         // Attacker will now attack the defender.
         m_DefendingUnit.DamageUnit(attackerAtk - defenderDef);
 
+
         // Checking if the Defender can fight back.
         if(m_DefendingUnit.m_HP < 1 || !m_DefenderCounters)
         {

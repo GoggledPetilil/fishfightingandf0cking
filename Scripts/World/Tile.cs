@@ -51,7 +51,9 @@ public class Tile : MonoBehaviour
 
         GridManager.m_instance.SetCursorPosition(transform.position);
         SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Cursor);
-        CameraManager.m_instance.SetCameraTarget(new Vector2(transform.position.x, transform.position.y));
+
+        CameraManager.m_instance.SetCameraTarget(this.gameObject.transform.position);
+
         GridManager.m_instance.ShowHighlightedUnit(m_OccupiedUnit);
         GridManager.m_instance.ShowHighlightedTile(this);
     }
@@ -78,18 +80,28 @@ public class Tile : MonoBehaviour
             if(m_OccupiedUnit.m_Faction == UnitBase.Faction.Hero)
             {
                 // Occupying unit is a Hero.
-                if(m_OccupiedUnit != UnitManager.m_instance.m_SelectedUnit)
+                if(m_OccupiedUnit.m_Hasmoved == false)
                 {
-                    // This is a different hero, so select this unit instead.
-                    UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
+                    // The hero hasn't moved yet.
+                    if(m_OccupiedUnit != UnitManager.m_instance.m_SelectedUnit)
+                    {
+                        // This is a different hero, so select this unit instead.
+                        UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
+                    }
+                    else
+                    {
+                        // The occupying unit is the same as the unit already selected.
+                        m_OccupiedUnit.FinishedMoving();
+                        GridManager.m_instance.TileClickAllowed(false);
+                        GridManager.m_instance.ToggleCursor(false);
+                    }
                 }
                 else
                 {
-                    // The occupying unit is the same as the unit already selected.
-                    m_OccupiedUnit.FinishedMoving();
-                    GridManager.m_instance.TileClickAllowed(false);
-                    GridManager.m_instance.ToggleCursor(false);
+                    // The hero has already moved.
+                    UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
                 }
+
             }
             else
             {
@@ -103,6 +115,10 @@ public class Tile : MonoBehaviour
                 {
                     // The player has an attacking unit selected, attack this enemy.
                     BattleManager.m_instance.StartBattle((Hero)UnitManager.m_instance.m_SelectedUnit, (Enemy)m_OccupiedUnit);
+                    if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+                    {
+                        MenuManager.m_instance.ToggleEndButton(true);
+                    }
                 }
             }
         }

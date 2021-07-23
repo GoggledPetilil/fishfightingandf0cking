@@ -19,8 +19,8 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Tile m_BasicPrefab;
 
     [Header("Faction Factories")]
-    public UnitFactory m_PlayerFactory;
-    public UnitFactory m_EnemyFactory;
+    public Tile m_PlayerSpawnTile;
+    public Tile m_EnemySpawnTile;
 
     [Header("Map Info")]
     [SerializeField] private GameObject m_UnitInfoBox;
@@ -73,15 +73,21 @@ public class GridManager : MonoBehaviour
             return;
         }
         string trait = "";
-        if(tile.m_Walkable)
-        {
-            trait = "Def +" + tile.m_DefBoost.ToString();
-        }
-        else
+        if(!tile.m_Walkable)
         {
             trait = "Impassable";
         }
+        else
+        {
+            trait = "Def +" + tile.m_DefBoost.ToString();
+        }
         m_TileInfoBox.transform.GetChild(0).GetComponent<TMP_Text>().text = tile.m_TileName + "\n" + trait;
         m_TileInfoBox.SetActive(true);
+    }
+
+    public void SpawnNewUnit(GameObject unitPrefab)
+    {
+        GameObject unit = Instantiate(unitPrefab, m_PlayerSpawnTile.transform.position, Quaternion.identity) as GameObject;
+        EffectsManager.m_instance.SpawnEgg(m_PlayerSpawnTile.transform.position);
     }
 }
