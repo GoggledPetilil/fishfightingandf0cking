@@ -71,6 +71,7 @@ public class UnitManager : MonoBehaviour
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
         MenuManager.m_instance.ToggleUnitCommandMenu(false);
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
 
         // The unit will now be allowed to click a valid tile to attack an enemy.
     }
@@ -87,6 +88,7 @@ public class UnitManager : MonoBehaviour
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
         MenuManager.m_instance.ToggleUnitCommandMenu(false);
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
 
 
         // The unit will now be allowed to click a valid tile to attack an enemy.
@@ -99,6 +101,7 @@ public class UnitManager : MonoBehaviour
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
         CameraManager.m_instance.LockCamera(false);
+        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
 
         if(m_SelectedUnit != null)
         {
@@ -112,6 +115,7 @@ public class UnitManager : MonoBehaviour
         if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
         {
             movingFaction = UnitBase.Faction.Hero;
+            deselectLock = false;
         }
         else
         {

@@ -20,6 +20,8 @@ public class UnitBuyButton : MonoBehaviour
     void Awake()
     {
         m_ThisButton = this.gameObject.GetComponent<Button>();
+        m_UnitNameField.text = m_UnitPrefab.GetComponent<UnitBase>().m_UnitName;
+        m_PriceField.text = m_Price.ToString();
     }
 
     void OnEnable()

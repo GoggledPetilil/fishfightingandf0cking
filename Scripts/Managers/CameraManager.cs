@@ -27,8 +27,8 @@ public class CameraManager : MonoBehaviour
 
     void Move()
     {
-        float xDiff = Vector2.Distance(Vector2.right * transform.position.x, Vector2.right * m_Target.x);
-        float yDiff = Vector2.Distance(Vector2.up * transform.position.y, Vector2.up * m_Target.y);
+        int xDiff = Mathf.FloorToInt(Vector2.Distance(Vector2.right * transform.position.x, Vector2.right * m_Target.x));
+        int yDiff = Mathf.FloorToInt(Vector2.Distance(Vector2.up * transform.position.y, Vector2.up * m_Target.y));
 
         Vector3 newPos = transform.position;
         if(Mathf.Abs(xDiff) >= threshold.x)
@@ -52,7 +52,7 @@ public class CameraManager : MonoBehaviour
     private Vector3 CalculateThreshold()
     {
         Rect aspect = Camera.main.pixelRect;
-        Vector2 t = new Vector2(Camera.main.orthographicSize * aspect.width / aspect.height, Camera.main.orthographicSize);
+        Vector2 t = new Vector2(Mathf.FloorToInt(Camera.main.orthographicSize * aspect.width / aspect.height), Mathf.FloorToInt(Camera.main.orthographicSize));
         t.x -= followOffset.x;
         t.y -= followOffset.y;
 

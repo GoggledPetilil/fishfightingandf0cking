@@ -56,10 +56,12 @@ public class GameManager : MonoBehaviour
 
     public void WinGame()
     {
-        // Will check if m_Chapter is higher than the player save's chapter num
-        // If yes, set it to this. If not, just ignore.
+        int stagesBeaten = PlayerPrefs.GetInt("StagesBeaten", 1);
+        if(stagesBeaten <= m_Chapter)
+        {
+            PlayerPrefs.SetInt("StagesBeaten", m_Chapter + 1);
+        }
         LevelManager.m_instance.LoadNewLevel("MainMenu");
-
     }
 
     public void LoseGame()
