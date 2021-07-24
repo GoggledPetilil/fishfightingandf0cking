@@ -294,7 +294,7 @@ public class UnitBase : MonoBehaviour
         m_Moving = false;
         GetTileUnder();
 
-        if(m_Faction == Faction.Enemy)
+        if(m_Faction == Faction.Enemy && GameManager.m_instance.m_IsMultiplayer == false)
         {
             // This is an enemy, so check available options.
 
@@ -390,7 +390,7 @@ public class UnitBase : MonoBehaviour
         float c = 0.32f;
         m_sr.color = new Color(c, c, c, 1f);
 
-        if(m_Faction == Faction.Enemy)
+        if(m_Faction == Faction.Enemy && !GameManager.m_instance.m_IsMultiplayer)
         {
           // This is an enemy unit.
           int i = TurnManager.m_instance.m_EnemyUnits.IndexOf((Enemy)this);
@@ -409,12 +409,11 @@ public class UnitBase : MonoBehaviour
     {
         m_Hasmoved = true;
         m_IsAttacking = false;
-        CameraManager.m_instance.LockCamera(true);
         ClearTileList();
         SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_UnitDeath);
         EffectsManager.m_instance.SpawnExplosion(this.transform.position);
         CameraManager.m_instance.SetCameraTarget(this.transform.position);
-        this.gameObject.transform.position = new Vector2(99, 99); // Get this dude off-screen.
+        m_sr.enabled = false;
 
         // Make the rest of the logic happen.
         if(m_Faction == Faction.Hero)
@@ -428,7 +427,7 @@ public class UnitBase : MonoBehaviour
         }
         else
         {
-            if(TurnManager.m_instance.m_Phase == TurnManager.Phase.EnemyPhase)
+            if(TurnManager.m_instance.m_Phase == TurnManager.Phase.EnemyPhase && !GameManager.m_instance.m_IsMultiplayer)
             {
                 // It has to check if there are more than 1 enemies left, because this enemy is deleted later.
                 if(TurnManager.m_instance.m_EnemyUnits.Count > 1)
@@ -437,8 +436,8 @@ public class UnitBase : MonoBehaviour
                     TurnManager.m_instance.MoveNextEnemy(i + 1);
                 }
             }
-            TurnManager.m_instance.DeleteEnemy((Enemy)this);
 
+            TurnManager.m_instance.DeleteEnemy((Enemy)this);
             if(TurnManager.m_instance.m_EnemyUnits.Count <= 0)
             {
                 GameManager.m_instance.WinGame();
@@ -446,7 +445,6 @@ public class UnitBase : MonoBehaviour
             }
         }
         Destroy(this.gameObject);
-        CameraManager.m_instance.LockCamera(false);
     }
 
     public void MoveAnimation()

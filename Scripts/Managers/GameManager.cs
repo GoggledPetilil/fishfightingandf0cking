@@ -10,14 +10,22 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Info")]
     [SerializeField] private int m_Chapter;
+    public bool m_IsMultiplayer;
 
-    [Header("Funds")]
-    public int m_PlayerFunds;
-    public int m_EnemyFunds;
+    [Header("General Funds")]
     [SerializeField] private int m_FundsThreshold; // If fund are bigger than this, bad stuff happens.
-    public Image m_FundsSlider;
-    public TMP_Text m_FundsDisplay;
     public int m_MoneyPerTurn;
+
+    [Header("Red Funds")]
+    public int m_PlayerFunds;
+    public Image m_RedFundsSlider;
+    public TMP_Text m_RedFundsDisplay;
+
+    [Header("Blue Funds")]
+    public int m_EnemyFunds;
+    public Image m_BlueFundsSlider;
+    public TMP_Text m_BlueFundsDisplay;
+
 
     void Awake()
     {
@@ -27,14 +35,23 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         ChangePlayerFunds(0);
+        ChangeEnemyFunds(0);
     }
 
     public void ChangePlayerFunds(int funds)
     {
         m_PlayerFunds += funds;
         float fill = (float)m_PlayerFunds / (float)m_FundsThreshold;
-        m_FundsSlider.fillAmount = fill;
-        m_FundsDisplay.text = m_PlayerFunds.ToString();
+        m_RedFundsSlider.fillAmount = fill;
+        m_RedFundsDisplay.text = m_PlayerFunds.ToString();
+    }
+
+    public void ChangeEnemyFunds(int funds)
+    {
+        m_EnemyFunds += funds;
+        float fill = (float)m_EnemyFunds / (float)m_FundsThreshold;
+        m_BlueFundsSlider.fillAmount = fill;
+        m_BlueFundsDisplay.text = m_EnemyFunds.ToString();
     }
 
     public void WinGame()

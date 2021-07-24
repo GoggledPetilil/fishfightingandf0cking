@@ -87,7 +87,17 @@ public class GridManager : MonoBehaviour
 
     public void SpawnNewUnit(GameObject unitPrefab)
     {
-        GameObject unit = Instantiate(unitPrefab, m_PlayerSpawnTile.transform.position, Quaternion.identity) as GameObject;
-        EffectsManager.m_instance.SpawnEgg(m_PlayerSpawnTile.transform.position);
+        Vector3 pos;
+        if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+        {
+            pos = m_PlayerSpawnTile.transform.position;
+        }
+        else
+        {
+            pos = m_EnemySpawnTile.transform.position;
+        }
+
+        GameObject unit = Instantiate(unitPrefab, pos, Quaternion.identity) as GameObject;
+        EffectsManager.m_instance.SpawnEgg(pos);
     }
 }

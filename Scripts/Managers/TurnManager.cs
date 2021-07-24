@@ -34,8 +34,8 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_Phase = Phase.EnemyPhase;
-        SwitchPhase();
+        //m_Phase = Phase.EnemyPhase;
+        //SwitchPhase();
     }
 
     public void AddHeroUnit(Hero unit)
@@ -92,14 +92,28 @@ public class TurnManager : MonoBehaviour
         if(m_Phase == Phase.PlayerPhase)
         {
             c = Color.red;
-            m_PhaseText.text = "PLAYER PHASE";
             SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_PlayerPhase);
+            if(GameManager.m_instance.m_IsMultiplayer)
+            {
+                m_PhaseText.text = "RED PHASE";
+            }
+            else
+            {
+                m_PhaseText.text = "PLAYER PHASE";
+            }
         }
         else
         {
             c = Color.blue;
-            m_PhaseText.text = "ENEMY PHASE";
             SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_EnemyPhase);
+            if(GameManager.m_instance.m_IsMultiplayer)
+            {
+                m_PhaseText.text = "BLUE PHASE";
+            }
+            else
+            {
+                m_PhaseText.text = "ENEMY PHASE";
+            }
         }
         m_TopBorder.color = c;
         m_BottomBorder.color = c;
@@ -117,7 +131,19 @@ public class TurnManager : MonoBehaviour
         if(m_Phase == Phase.EnemyPhase)
         {
             // It is now Enemy Phase
-            MoveNextEnemy(0);
+            if(GameManager.m_instance.m_IsMultiplayer)
+            {
+                GridManager.m_instance.ToggleCursor(true);
+                GridManager.m_instance.TileClickAllowed(true);
+                MenuManager.m_instance.ToggleEndButton(true);
+                GameManager.m_instance.ChangeEnemyFunds(GameManager.m_instance.m_MoneyPerTurn);
+
+                CameraManager.m_instance.SetCameraTarget(m_EnemyUnits[0].transform.position);
+            }
+            else
+            {
+                MoveNextEnemy(0);
+            }
         }
         else
         {

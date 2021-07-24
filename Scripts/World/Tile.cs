@@ -11,6 +11,7 @@ public class Tile : MonoBehaviour
     public bool m_IsWalkable => m_Walkable && m_OccupiedUnit == null;
     public int m_TravelCost;
     public int m_DefBoost;
+    private UnitBase.Faction movingFaction;
 
     [Header("Range Data")]
     public List<Tile> m_AdjacentList = new List<Tile>();
@@ -73,20 +74,28 @@ public class Tile : MonoBehaviour
         if(GridManager.m_instance.m_CanClick == false) return;
 
         SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Confirm);
+        if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+        {
+            movingFaction = UnitBase.Faction.Hero;
+        }
+        else
+        {
+            movingFaction = UnitBase.Faction.Enemy;
+        }
 
         if(m_OccupiedUnit != null)
         {
             // This tile is occupied. Interact with the occupent:
-            if(m_OccupiedUnit.m_Faction == UnitBase.Faction.Hero)
+            if(m_OccupiedUnit.m_Faction == movingFaction)
             {
-                // Occupying unit is a Hero.
+                // Occupying unit is your unit.
                 if(m_OccupiedUnit.m_Hasmoved == false)
                 {
-                    // The hero hasn't moved yet.
+                    // Your unit hasn't moved yet.
                     if(m_OccupiedUnit != UnitManager.m_instance.m_SelectedUnit)
                     {
                         // This is a different hero, so select this unit instead.
-                        UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
+                        SelectThisHero();
                     }
                     else
                     {
@@ -99,7 +108,7 @@ public class Tile : MonoBehaviour
                 else
                 {
                     // The hero has already moved.
-                    UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
+                    SelectThisHero();
                 }
 
             }
@@ -109,13 +118,21 @@ public class Tile : MonoBehaviour
                 if(UnitManager.m_instance.m_SelectedUnit == null || UnitManager.m_instance.m_SelectedUnit.m_IsAttacking == false)
                 {
                     // The player is not trying to attack this enemy, so display range.
-                    UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
+                    SelectThisHero();
                 }
                 else if(UnitManager.m_instance.m_SelectedUnit.m_SelectableEnemies.Contains(m_OccupiedUnit))
                 {
                     // The player has an attacking unit selected, attack this enemy.
-                    BattleManager.m_instance.StartBattle((Hero)UnitManager.m_instance.m_SelectedUnit, (Enemy)m_OccupiedUnit);
-                    if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+                    if(movingFaction == UnitBase.Faction.Hero)
+                    {
+                        BattleManager.m_instance.StartBattle((Hero)UnitManager.m_instance.m_SelectedUnit, (Enemy)m_OccupiedUnit);
+                    }
+                    else
+                    {
+                        BattleManager.m_instance.StartBattle((Enemy)UnitManager.m_instance.m_SelectedUnit, (Hero)m_OccupiedUnit);
+                    }
+
+                    if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase || GameManager.m_instance.m_IsMultiplayer)
                     {
                         MenuManager.m_instance.ToggleEndButton(true);
                     }
@@ -130,7 +147,7 @@ public class Tile : MonoBehaviour
                 // The Player has a unit selected
                 UnitBase unit = UnitManager.m_instance.m_SelectedUnit;
 
-                if(unit.m_TileRange.Contains(this) && unit.m_Faction == UnitBase.Faction.Hero &&
+                if(unit.m_TileRange.Contains(this) && unit.m_Faction == movingFaction &&
                 !unit.m_Hasmoved && !unit.m_Moving && !unit.m_IsAttacking)
                 {
                     // The selected Player unit will now move to this tile.
@@ -142,8 +159,21 @@ public class Tile : MonoBehaviour
                 {
                     // Player clicked a tile out of range or had an enemy selected, so deselect the unit.
                     UnitManager.m_instance.SetSelectedHero(null);
+                    MenuManager.m_instance.ToggleEndButton(true);
                 }
             }
+        }
+    }
+
+    void SelectThisHero()
+    {
+        if(m_OccupiedUnit.m_Faction == UnitBase.Faction.Hero)
+        {
+            UnitManager.m_instance.SetSelectedHero((Hero)m_OccupiedUnit);
+        }
+        else if(m_OccupiedUnit.m_Faction == UnitBase.Faction.Enemy)
+        {
+            UnitManager.m_instance.SetSelectedHero((Enemy)m_OccupiedUnit);
         }
     }
 

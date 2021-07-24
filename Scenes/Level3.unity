@@ -5345,7 +5345,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 0}
+  m_BackGroundColor: {r: 0.9411765, g: 0.9411765, b: 0.972549, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -7528,6 +7528,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1772556990527902563, guid: 05f656eb4976e8372988a9ef8d5c0a92, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1772556991730286808, guid: 05f656eb4976e8372988a9ef8d5c0a92, type: 3}
       propertyPath: m_Name
       value: LevelManager
@@ -58392,6 +58396,8 @@ MonoBehaviour:
   m_ShootButton: {fileID: 1937434687}
   m_IsBuying: 0
   m_UnitBuyMenu: {fileID: 1738046371}
+  m_RedUnitList: {fileID: 0}
+  m_BlueUnitList: {fileID: 0}
   m_BuyPreview: {fileID: 1750239431}
   m_PreviewName: {fileID: 54363860}
   m_PreviewImage: {fileID: 766572864}
@@ -64277,13 +64283,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ed65a3781b7ade68a04b59949cf376f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Chapter: 0
-  m_PlayerFunds: 1000
-  m_EnemyFunds: 1000
+  m_Chapter: 3
+  m_IsMultiplayer: 0
   m_FundsThreshold: 10000
-  m_FundsSlider: {fileID: 390994901}
-  m_FundsDisplay: {fileID: 199159674}
   m_MoneyPerTurn: 200
+  m_PlayerFunds: 1000
+  m_RedFundsSlider: {fileID: 0}
+  m_RedFundsDisplay: {fileID: 0}
+  m_EnemyFunds: 1000
+  m_BlueFundsSlider: {fileID: 0}
+  m_BlueFundsDisplay: {fileID: 0}
 --- !u!1 &1463075850
 GameObject:
   m_ObjectHideFlags: 0

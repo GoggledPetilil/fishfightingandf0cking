@@ -16,6 +16,8 @@ public class MenuManager : MonoBehaviour
     [Header("Unit Buy Menu")]
     public bool m_IsBuying;
     [SerializeField] private GameObject m_UnitBuyMenu;
+    [SerializeField] private GameObject m_RedUnitList;
+    [SerializeField] private GameObject m_BlueUnitList;
     [SerializeField] private GameObject m_BuyPreview;
     [SerializeField] private TMP_Text m_PreviewName;
     [SerializeField] private Image m_PreviewImage;
@@ -66,6 +68,17 @@ public class MenuManager : MonoBehaviour
     {
         MenuManager.m_instance.ToggleUnitBuyMenu(true);
 
+        if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+        {
+            m_RedUnitList.SetActive(true);
+            m_BlueUnitList.SetActive(false);
+        }
+        else
+        {
+            m_BlueUnitList.SetActive(true);
+            m_RedUnitList.SetActive(false);
+        }
+
         CameraManager.m_instance.LockCamera(true);
         GridManager.m_instance.TileClickAllowed(false);
         GridManager.m_instance.ToggleCursor(false);
@@ -80,6 +93,8 @@ public class MenuManager : MonoBehaviour
         CameraManager.m_instance.LockCamera(false);
         GridManager.m_instance.TileClickAllowed(true);
         GridManager.m_instance.ToggleCursor(true);
+
+        HidePreviewUnit();
 
         m_IsBuying = false;
     }

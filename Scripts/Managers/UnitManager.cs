@@ -7,6 +7,8 @@ public class UnitManager : MonoBehaviour
     public static UnitManager m_instance;
 
     public UnitBase m_SelectedUnit;
+    private UnitBase.Faction movingFaction;
+    private bool deselectLock; // Prevents the player from deselecting AI enemies
 
     void Awake()
     {
@@ -15,8 +17,8 @@ public class UnitManager : MonoBehaviour
 
     void Update()
     {
-        if(m_SelectedUnit != null && TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase && !m_SelectedUnit.m_Moving
-        && Input.GetMouseButtonDown(1))
+        if(m_SelectedUnit != null && m_SelectedUnit.m_Faction == movingFaction && !m_SelectedUnit.m_Moving
+        && Input.GetMouseButtonDown(1) && !deselectLock)
         {
             m_SelectedUnit.m_OriginTile.SetUnit(m_SelectedUnit);
             m_SelectedUnit.m_IsAttacking = false;
@@ -34,6 +36,7 @@ public class UnitManager : MonoBehaviour
     public void SetSelectedHero(UnitBase unit)
     {
         ClearSelectedTileRange();
+        AllowedToDeselect();
         if(unit == null)
         {
             m_SelectedUnit = unit;
@@ -102,5 +105,25 @@ public class UnitManager : MonoBehaviour
             m_SelectedUnit.EndTurn();
         }
         SetSelectedHero(null);
+    }
+
+    void AllowedToDeselect()
+    {
+        if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+        {
+            movingFaction = UnitBase.Faction.Hero;
+        }
+        else
+        {
+            movingFaction = UnitBase.Faction.Enemy;
+            if(GameManager.m_instance.m_IsMultiplayer)
+            {
+                deselectLock = false;
+            }
+            else
+            {
+                deselectLock = true;
+            }
+        }
     }
 }

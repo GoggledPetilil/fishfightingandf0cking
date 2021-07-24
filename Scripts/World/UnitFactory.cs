@@ -19,6 +19,7 @@ public class UnitFactory : Tile
         if(MenuManager.m_instance.m_IsBuying && Input.GetMouseButtonDown(1))
         {
             MenuManager.m_instance.CloseFactoryMenu();
+            MenuManager.m_instance.ToggleEndButton(true);
         }
     }
 
@@ -27,13 +28,35 @@ public class UnitFactory : Tile
         // You can't click on tiles if you don't have permission to lol
         if(GridManager.m_instance.m_CanClick == false) return;
 
-        if(GridManager.m_instance.m_PlayerSpawnTile.m_OccupiedUnit != null || !m_isPlayerFactory || UnitManager.m_instance.m_SelectedUnit != null)
+        Tile spawnTile = null;
+        bool samePhase = false;
+        if(TurnManager.m_instance.m_Phase == TurnManager.Phase.PlayerPhase)
+        {
+            // It's now the player phase.
+            spawnTile = GridManager.m_instance.m_PlayerSpawnTile;
+            if(m_isPlayerFactory)
+            {
+                samePhase = true;
+            }
+        }
+        else if(TurnManager.m_instance.m_Phase == TurnManager.Phase.EnemyPhase)
+        {
+            // It's now the enemy phase.
+            spawnTile = GridManager.m_instance.m_EnemySpawnTile;
+            if(!m_isPlayerFactory)
+            {
+                samePhase = true;
+            }
+        }
+
+        if(spawnTile.m_OccupiedUnit != null || !samePhase || UnitManager.m_instance.m_SelectedUnit != null)
         {
             base.OnMouseDown();
         }
         else
         {
             MenuManager.m_instance.OpenFactoryMenu();
+            MenuManager.m_instance.ToggleEndButton(false);
         }
     }
 }
