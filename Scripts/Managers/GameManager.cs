@@ -20,11 +20,13 @@ public class GameManager : MonoBehaviour
     public int m_PlayerFunds;
     public Image m_RedFundsSlider;
     public TMP_Text m_RedFundsDisplay;
+    public List<Magazine> m_RedMagazines = new List<Magazine>();
 
     [Header("Blue Funds")]
     public int m_EnemyFunds;
     public Image m_BlueFundsSlider;
     public TMP_Text m_BlueFundsDisplay;
+    public List<Magazine> m_BlueMagazines = new List<Magazine>();
 
 
     void Awake()
@@ -40,7 +42,7 @@ public class GameManager : MonoBehaviour
 
     public void ChangePlayerFunds(int funds)
     {
-        m_PlayerFunds += funds;
+        m_PlayerFunds += funds * (1 + m_RedMagazines.Count);
         float fill = (float)m_PlayerFunds / (float)m_FundsThreshold;
         m_RedFundsSlider.fillAmount = fill;
         m_RedFundsDisplay.text = m_PlayerFunds.ToString();
@@ -48,10 +50,22 @@ public class GameManager : MonoBehaviour
 
     public void ChangeEnemyFunds(int funds)
     {
-        m_EnemyFunds += funds;
+        m_EnemyFunds += funds * (1 + m_BlueMagazines.Count);
         float fill = (float)m_EnemyFunds / (float)m_FundsThreshold;
         m_BlueFundsSlider.fillAmount = fill;
         m_BlueFundsDisplay.text = m_EnemyFunds.ToString();
+    }
+
+    public void RemoveMagazine(Magazine mag)
+    {
+        if(m_RedMagazines.Contains(mag))
+        {
+            m_RedMagazines.Remove(mag);
+        }
+        else if(m_BlueMagazines.Contains(mag))
+        {
+            m_BlueMagazines.Remove(mag);
+        }
     }
 
     public void WinGame()

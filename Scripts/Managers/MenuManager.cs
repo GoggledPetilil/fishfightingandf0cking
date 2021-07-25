@@ -7,6 +7,7 @@ using TMPro;
 public class MenuManager : MonoBehaviour
 {
     public static MenuManager m_instance;
+    [SerializeField] private GameObject m_UICanvas;
 
     [Header("Unit Command Menu")]
     [SerializeField] private GameObject m_UnitCommandMenu;
@@ -35,6 +36,7 @@ public class MenuManager : MonoBehaviour
     {
         m_UnitCommandMenu.SetActive(false);
         m_UnitBuyMenu.SetActive(false);
+        m_UICanvas.SetActive(true);
     }
 
     // Unit command menu

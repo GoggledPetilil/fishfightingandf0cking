@@ -389,6 +389,7 @@ public class UnitBase : MonoBehaviour
         ClearTileList();
         float c = 0.32f;
         m_sr.color = new Color(c, c, c, 1f);
+        m_Occupying.TileFunction();
 
         if(m_Faction == Faction.Enemy && !GameManager.m_instance.m_IsMultiplayer)
         {

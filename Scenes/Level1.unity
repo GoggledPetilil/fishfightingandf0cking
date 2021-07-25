@@ -15138,6 +15138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79500e6e9e31cb9339585a9e326e9349, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UICanvas: {fileID: 1750096221}
   m_UnitCommandMenu: {fileID: 1382008780}
   m_MeleeButton: {fileID: 91257831}
   m_ShootButton: {fileID: 242654886}
@@ -31542,9 +31543,11 @@ MonoBehaviour:
   m_PlayerFunds: 1000
   m_RedFundsSlider: {fileID: 1660559069}
   m_RedFundsDisplay: {fileID: 1754703884}
+  m_RedMagazines: []
   m_EnemyFunds: 1000
   m_BlueFundsSlider: {fileID: 90205486}
   m_BlueFundsDisplay: {fileID: 2139615869}
+  m_BlueMagazines: []
 --- !u!1001 &1828950328
 PrefabInstance:
   m_ObjectHideFlags: 0

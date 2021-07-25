@@ -24,7 +24,7 @@ public class UnitFactory : Tile
         }
     }
 
-    void OnMouseDown()
+    public override void OnMouseDown()
     {
         // You can't click on tiles if you don't have permission to lol
         if(GridManager.m_instance.m_CanClick == false) return;

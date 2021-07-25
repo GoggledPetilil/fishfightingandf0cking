@@ -40,8 +40,13 @@ public class Tile : MonoBehaviour
     {
         if(unit.m_Occupying != null) unit.m_Occupying.m_OccupiedUnit = null; // Unit won't occupy their last tile anymore.
         unit.transform.position = transform.position;
-        m_OccupiedUnit = unit;
         unit.m_Occupying = this;
+        m_OccupiedUnit = unit;
+    }
+
+    public virtual void TileFunction()
+    {
+        
     }
 
     void OnMouseEnter()
@@ -68,7 +73,7 @@ public class Tile : MonoBehaviour
         GridManager.m_instance.ShowHighlightedTile(null);
     }
 
-    public void OnMouseDown()
+    public virtual void OnMouseDown()
     {
         // You can't click on tiles if you don't have permission to lol
         if(GridManager.m_instance.m_CanClick == false) return;
