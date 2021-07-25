@@ -11,6 +11,11 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private GameObject m_MultiMenu;
     [SerializeField] private GameObject m_CreditsMenu;
 
+    void Start()
+    {
+        ShowMainMenu();
+    }
+
     void HideAll()
     {
         m_MainMenu.SetActive(false);
