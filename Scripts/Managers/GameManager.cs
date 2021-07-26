@@ -44,6 +44,13 @@ public class GameManager : MonoBehaviour
         {
             Destroy(TitleMusic.m_instance.gameObject);
         }
+
+        if(m_IsMultiplayer == false)
+        {
+            m_BlueAnimator.gameObject.SetActive(false);
+            m_RedAnimator.gameObject.GetComponent<RectTransform>().anchoredPosition =
+            new Vector2(0f, m_RedAnimator.gameObject.GetComponent<RectTransform>().anchoredPosition.y);
+        }
     }
 
     public void ChangePlayerFunds(int funds)
