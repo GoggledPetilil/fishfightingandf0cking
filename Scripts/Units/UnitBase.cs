@@ -59,6 +59,7 @@ public class UnitBase : MonoBehaviour
         m_HealthBar.SetHealthBar(m_MaxHP, m_HP);
 
         EffectsManager.m_instance.SpawnPopUp(transform.position, damage.ToString());
+        EffectsManager.m_instance.SpawnBlood(this.transform.position);
         SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_UnitDamage);
     }
 

@@ -18,6 +18,8 @@ public class Magazine : Tile
         UnitBase unit = m_OccupiedUnit;
         if(unit != null)
         {
+            if(GameManager.m_instance.m_RedMagazines.Contains(this) || GameManager.m_instance.m_BlueMagazines.Contains(this)) return;
+
             if(unit.m_Faction == UnitBase.Faction.Hero)
             {
                 m_MagazineGraphic.color = Color.red;
@@ -30,6 +32,8 @@ public class Magazine : Tile
                 GameManager.m_instance.RemoveMagazine(this);
                 GameManager.m_instance.m_BlueMagazines.Add(this);
             }
+            EffectsManager.m_instance.SpawnPopUp(this.transform.position, "CAPTURED!");
+            SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_CaptureSound);
         }
         else
         {

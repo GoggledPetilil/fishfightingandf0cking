@@ -17,6 +17,8 @@ public class TurnManager : MonoBehaviour
     public Phase m_Phase;
     public List<UnitBase> m_PlayerUnits = new List<UnitBase>();
     public List<Enemy> m_EnemyUnits = new List<Enemy>();
+    public TMP_Text m_UnitCount; // Shows how many units are left that can be moved.
+    private int m_UnitsLeft;
 
     public Enemy m_CurrentlyMoving;
 
@@ -93,6 +95,7 @@ public class TurnManager : MonoBehaviour
         {
             c = Color.red;
             SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_PlayerPhase);
+            CameraManager.m_instance.SetCameraTarget(m_PlayerUnits[0].transform.position);
             if(GameManager.m_instance.m_IsMultiplayer)
             {
                 m_PhaseText.text = "RED PHASE";
@@ -106,6 +109,7 @@ public class TurnManager : MonoBehaviour
         {
             c = Color.blue;
             SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_EnemyPhase);
+            CameraManager.m_instance.SetCameraTarget(m_EnemyUnits[0].transform.position);
             if(GameManager.m_instance.m_IsMultiplayer)
             {
                 m_PhaseText.text = "BLUE PHASE";
@@ -128,34 +132,6 @@ public class TurnManager : MonoBehaviour
 
     void SwitchPhaseLogic()
     {
-        if(m_Phase == Phase.EnemyPhase)
-        {
-            // It is now Enemy Phase
-            if(GameManager.m_instance.m_IsMultiplayer)
-            {
-                GridManager.m_instance.ToggleCursor(true);
-                GridManager.m_instance.TileClickAllowed(true);
-                MenuManager.m_instance.ToggleEndButton(true);
-                GameManager.m_instance.ChangeEnemyFunds(GameManager.m_instance.m_MoneyPerTurn);
-
-                CameraManager.m_instance.SetCameraTarget(m_EnemyUnits[0].transform.position);
-            }
-            else
-            {
-                MoveNextEnemy(0);
-            }
-        }
-        else
-        {
-            // It is now Player Phase
-            GridManager.m_instance.ToggleCursor(true);
-            GridManager.m_instance.TileClickAllowed(true);
-            MenuManager.m_instance.ToggleEndButton(true);
-            GameManager.m_instance.ChangePlayerFunds(GameManager.m_instance.m_MoneyPerTurn);
-
-            CameraManager.m_instance.SetCameraTarget(m_PlayerUnits[0].transform.position);
-        }
-
         foreach(Hero hero in m_PlayerUnits)
         {
             if(hero != null)
@@ -171,6 +147,68 @@ public class TurnManager : MonoBehaviour
         foreach(Enemy enemy in m_EnemyUnits)
         {
             enemy.RefreshTurn();
+        }
+
+        if(m_Phase == Phase.EnemyPhase)
+        {
+            // It is now Enemy Phase
+            if(GameManager.m_instance.m_IsMultiplayer)
+            {
+                GridManager.m_instance.ToggleCursor(true);
+                GridManager.m_instance.TileClickAllowed(true);
+                MenuManager.m_instance.ToggleEndButton(true);
+
+                int multi = 1 + GameManager.m_instance.m_BlueMagazines.Count;
+                int funds = GameManager.m_instance.m_MoneyPerTurn * multi;
+                GameManager.m_instance.ChangeEnemyFunds(funds);
+                EffectsManager.m_instance.SpawnPopUp(m_EnemyUnits[0].transform.position, "+" + funds.ToString());
+                SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_PowerUp);
+
+                if(GameManager.m_instance.m_EnemyFunds > GameManager.m_instance.m_FundsThreshold)
+                {
+                    foreach(Enemy unit in m_EnemyUnits)
+                    {
+                        int r = Random.Range(0, 2);
+                        if(r == 0)
+                        {
+                            unit.EndTurn();
+                            EffectsManager.m_instance.SpawnSteam(unit.transform.position);
+                            SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Steam);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MoveNextEnemy(0);
+            }
+        }
+        else
+        {
+            // It is now Player Phase
+            GridManager.m_instance.ToggleCursor(true);
+            GridManager.m_instance.TileClickAllowed(true);
+            MenuManager.m_instance.ToggleEndButton(true);
+
+            int multi = 1 + GameManager.m_instance.m_RedMagazines.Count;
+            int funds = GameManager.m_instance.m_MoneyPerTurn * multi;
+            GameManager.m_instance.ChangePlayerFunds(funds);
+            EffectsManager.m_instance.SpawnPopUp(m_PlayerUnits[0].transform.position, "+" + funds.ToString());
+            SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_PowerUp);
+
+            if(GameManager.m_instance.m_PlayerFunds > GameManager.m_instance.m_FundsThreshold)
+            {
+                foreach(Hero unit in m_PlayerUnits)
+                {
+                    int r = Random.Range(0, 2);
+                    if(r == 0)
+                    {
+                        unit.EndTurn();
+                        EffectsManager.m_instance.SpawnSteam(unit.transform.position);
+                        SoundManager.m_instance.PlayAudio(SoundManager.m_instance.m_Steam);
+                    }
+                }
+            }
         }
     }
 

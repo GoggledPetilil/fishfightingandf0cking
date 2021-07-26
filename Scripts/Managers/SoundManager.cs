@@ -16,6 +16,9 @@ public class SoundManager : MonoBehaviour
     public AudioClip m_UnitShoot;
     public AudioClip m_UnitDamage;
     public AudioClip m_UnitDeath;
+    public AudioClip m_CaptureSound;
+    public AudioClip m_PowerUp;
+    public AudioClip m_Steam;
 
     [Header("Phase Sounds")]
     public AudioClip m_PlayerPhase;

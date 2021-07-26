@@ -62,7 +62,8 @@ public class BattleManager : MonoBehaviour
         defenderDef = m_DefendingUnit.GetDefence();
 
         // Attacker will now attack the defender.
-        m_DefendingUnit.DamageUnit(attackerAtk - defenderDef);
+        int damage = Mathf.Clamp(attackerAtk - defenderDef, 0, 999);
+        m_DefendingUnit.DamageUnit(damage);
 
 
         // Checking if the Defender can fight back.
@@ -76,7 +77,8 @@ public class BattleManager : MonoBehaviour
             int defenderAtk = m_DefendingUnit.GetMeleeAtk();
             int attackerDef = m_AttackingUnit.GetDefence();
 
-            m_AttackingUnit.DamageUnit(defenderAtk - attackerDef);
+            damage = Mathf.Clamp(defenderAtk - attackerDef, 0, 999);
+            m_AttackingUnit.DamageUnit(damage);
         }
 
         if(m_DefendingUnit.m_HP < 1)
@@ -86,10 +88,12 @@ public class BattleManager : MonoBehaviour
         if(m_AttackingUnit.m_HP < 1)
         {
             m_AttackingUnit.Die();
+            CameraManager.m_instance.ShakeCamera(0.1f, 2f, 0.5f);
         }
         else
         {
             m_AttackingUnit.EndTurn();
+            CameraManager.m_instance.ShakeCamera(0.1f, 1f, 0.5f);
         }
     }
 }

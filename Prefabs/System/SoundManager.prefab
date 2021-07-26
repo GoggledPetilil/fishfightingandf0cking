@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4291015509194030328
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4291015509194030331}
+  - component: {fileID: 4291015509194030330}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4291015509194030331
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4291015509194030328}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4291015509194030330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4291015509194030328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9c46ef875ac75239a38212640650d15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Source: {fileID: 1506697719757506473, guid: 7471a682acf881faeb6620448884d196, type: 3}
+  m_Cursor: {fileID: 8300000, guid: 6bfe3f30facd085f1b6046d46f92ba99, type: 3}
+  m_Confirm: {fileID: 8300000, guid: e00db4511de337f66b82b11661d83784, type: 3}
+  m_Cancel: {fileID: 8300000, guid: a67898578de6439d4bddb805b20b0cc2, type: 3}
+  m_UnitShoot: {fileID: 8300000, guid: 5698692b6ab9d15deb86e31ee072fffd, type: 3}
+  m_UnitDamage: {fileID: 8300000, guid: a2be9b5069a2f26fcade51b91a3813b5, type: 3}
+  m_UnitDeath: {fileID: 8300000, guid: 653db1199702fee1586d3aa2bf4785df, type: 3}
+  m_CaptureSound: {fileID: 8300000, guid: 1d895c06f8ee255028099f66591527f3, type: 3}
+  m_PowerUp: {fileID: 8300000, guid: 57fe96e5427119fcb8af381a5b24451a, type: 3}
+  m_Steam: {fileID: 8300000, guid: 280023ffb1a1777c9b831b7955e53bfb, type: 3}
+  m_PlayerPhase: {fileID: 8300000, guid: 79db0d105fe56ee949e30c88ed0a131f, type: 3}
+  m_EnemyPhase: {fileID: 8300000, guid: 7522bf0088a012b52817f0d8996ada97, type: 3}

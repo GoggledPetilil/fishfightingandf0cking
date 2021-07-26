@@ -10,6 +10,8 @@ public class EffectsManager : MonoBehaviour
     [SerializeField] private GameObject m_TextPopUp;
     [SerializeField] private GameObject m_Explosion;
     [SerializeField] private GameObject m_EggHatch;
+    [SerializeField] private GameObject m_Blood;
+    [SerializeField] private GameObject m_Steam;
 
     void Awake()
     {
@@ -30,5 +32,15 @@ public class EffectsManager : MonoBehaviour
     public void SpawnEgg(Vector2 pos)
     {
         Instantiate(m_EggHatch, pos, Quaternion.identity);
+    }
+
+    public void SpawnBlood(Vector2 pos)
+    {
+        Instantiate(m_Blood, pos, Quaternion.identity);
+    }
+
+    public void SpawnSteam(Vector2 pos)
+    {
+        Instantiate(m_Steam, pos, Quaternion.identity);
     }
 }

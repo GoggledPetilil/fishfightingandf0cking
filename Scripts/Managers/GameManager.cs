@@ -13,18 +13,20 @@ public class GameManager : MonoBehaviour
     public bool m_IsMultiplayer;
 
     [Header("General Funds")]
-    [SerializeField] private int m_FundsThreshold; // If fund are bigger than this, bad stuff happens.
+    public int m_FundsThreshold; // If fund are bigger than this, bad stuff happens.
     public int m_MoneyPerTurn;
 
     [Header("Red Funds")]
     public int m_PlayerFunds;
     public Image m_RedFundsSlider;
+    public Animator m_RedAnimator;
     public TMP_Text m_RedFundsDisplay;
     public List<Magazine> m_RedMagazines = new List<Magazine>();
 
     [Header("Blue Funds")]
     public int m_EnemyFunds;
     public Image m_BlueFundsSlider;
+    public Animator m_BlueAnimator;
     public TMP_Text m_BlueFundsDisplay;
     public List<Magazine> m_BlueMagazines = new List<Magazine>();
 
@@ -36,24 +38,46 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        ChangePlayerFunds(0);
+        ChangePlayerFunds(m_MoneyPerTurn);
         ChangeEnemyFunds(0);
+        if(TitleMusic.m_instance != null)
+        {
+            Destroy(TitleMusic.m_instance.gameObject);
+        }
     }
 
     public void ChangePlayerFunds(int funds)
     {
-        m_PlayerFunds += funds * (1 + m_RedMagazines.Count);
+        m_PlayerFunds += funds;
         float fill = (float)m_PlayerFunds / (float)m_FundsThreshold;
         m_RedFundsSlider.fillAmount = fill;
         m_RedFundsDisplay.text = m_PlayerFunds.ToString();
+
+        if(m_PlayerFunds >= m_FundsThreshold)
+        {
+            m_RedAnimator.SetBool("TooMuch", true);
+        }
+        else
+        {
+            m_RedAnimator.SetBool("TooMuch", false);
+        }
     }
 
     public void ChangeEnemyFunds(int funds)
     {
-        m_EnemyFunds += funds * (1 + m_BlueMagazines.Count);
+        m_EnemyFunds += funds;
         float fill = (float)m_EnemyFunds / (float)m_FundsThreshold;
         m_BlueFundsSlider.fillAmount = fill;
         m_BlueFundsDisplay.text = m_EnemyFunds.ToString();
+
+        if(m_EnemyFunds >= m_FundsThreshold)
+        {
+            m_BlueAnimator.SetBool("TooMuch", true);
+        }
+        else
+        {
+            m_BlueAnimator.SetBool("TooMuch", false);
+        }
     }
 
     public void RemoveMagazine(Magazine mag)
@@ -70,6 +94,14 @@ public class GameManager : MonoBehaviour
 
     public void WinGame()
     {
+        GridManager.m_instance.ToggleCursor(false);
+        GridManager.m_instance.TileClickAllowed(false);
+        MenuManager.m_instance.ToggleEndButton(false);
+        Invoke("WinTheGame", 2f);
+    }
+
+    void WinTheGame()
+    {
         int stagesBeaten = PlayerPrefs.GetInt("StagesBeaten", 1);
         if(stagesBeaten <= m_Chapter)
         {
@@ -79,6 +111,14 @@ public class GameManager : MonoBehaviour
     }
 
     public void LoseGame()
+    {
+        GridManager.m_instance.ToggleCursor(false);
+        GridManager.m_instance.TileClickAllowed(false);
+        MenuManager.m_instance.ToggleEndButton(false);
+        Invoke("LoseTheGame", 2f);
+    }
+
+    void LoseTheGame()
     {
         LevelManager.m_instance.LoadNewLevel("MainMenu");
     }
