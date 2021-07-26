@@ -88,7 +88,7 @@ public class BattleManager : MonoBehaviour
         if(m_AttackingUnit.m_HP < 1)
         {
             m_AttackingUnit.Die();
-            CameraManager.m_instance.ShakeCamera(0.1f, 2f, 0.5f);
+            CameraManager.m_instance.ShakeCamera(0.2f, 2f, 0.5f);
         }
         else
         {
